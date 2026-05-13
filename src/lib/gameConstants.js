@@ -1,0 +1,127 @@
+export const FIELD_SIZES = {
+  small:  { rows: 9,  cols: 9,  mines: 10, label: 'Small'  },
+  medium: { rows: 16, cols: 16, mines: 40, label: 'Medium' },
+  large:  { rows: 16, cols: 30, mines: 99, label: 'Large'  },
+};
+
+export const ABILITIES = {
+  scan: {
+    id: 'scan',
+    name: 'Scan',
+    description: 'Reveals 1 safe cell nearby',
+    charges: 3,
+    icon: '🔍',
+    color: 'text-cyan-400',
+    bgColor: 'bg-cyan-500/20',
+    borderColor: 'border-cyan-500/40',
+    shopPrice: null, // everyone starts with it
+    shopCurrency: null,
+  },
+  shield: {
+    id: 'shield',
+    name: 'Shield',
+    description: 'Auto-activates on mine hit, saves you once per game',
+    charges: 6,
+    icon: '🛡️',
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500/20',
+    borderColor: 'border-blue-500/40',
+    shopPrice: 150,
+    shopCurrency: 'coins',
+  },
+  detonate: {
+    id: 'detonate',
+    name: 'Detonate',
+    description: 'Destroys all mines in a 3×3 area of your choice',
+    charges: 10,
+    icon: '💥',
+    color: 'text-orange-400',
+    bgColor: 'bg-orange-500/20',
+    borderColor: 'border-orange-500/40',
+    shopPrice: 200,
+    shopCurrency: 'coins',
+  },
+  reveal_zone: {
+    id: 'reveal_zone',
+    name: 'Reveal Zone',
+    description: 'Reveals a 5×5 area of your choice',
+    charges: 12,
+    icon: '🌐',
+    color: 'text-green-400',
+    bgColor: 'bg-green-500/20',
+    borderColor: 'border-green-500/40',
+    shopPrice: 400,
+    shopCurrency: 'coins',
+  },
+  jce: {
+    id: 'jce',
+    name: 'Judgement Cut End',
+    description: 'Destroys 90% of mines in a cinematic barrage',
+    charges: 12,
+    icon: '⚔️',
+    color: 'text-white',
+    bgColor: 'bg-white/10',
+    borderColor: 'border-white/30',
+    shopPrice: 2,
+    shopCurrency: 'usd',
+  },
+};
+
+export const SKINS = {
+  default: {
+    id: 'default',
+    name: 'Default',
+    description: 'The classic dark look',
+    price: 0,
+    bgHint: 'bg-background',
+    preview: ['#1e2235', '#161b2c'],
+  },
+  neon: {
+    id: 'neon',
+    name: 'Neon',
+    description: 'Electric cyan glow on dark',
+    price: 300,
+    bgHint: 'bg-[#050510]',
+    preview: ['#0a0a1a', '#0ff'],
+  },
+  cyberpunk: {
+    id: 'cyberpunk',
+    name: 'Cyberpunk',
+    description: 'Hot pink & yellow on dark violet',
+    price: 350,
+    bgHint: 'bg-[#0d050d]',
+    preview: ['#1a0a1a', '#ff0066'],
+  },
+  city: {
+    id: 'city',
+    name: 'City',
+    description: 'Night cityscape blues & steel',
+    price: 250,
+    bgHint: 'bg-[#111827]',
+    preview: ['#2a3042', '#90cdf4'],
+  },
+  sakura: {
+    id: 'sakura',
+    name: 'Sakura',
+    description: 'Soft pink cherry blossoms',
+    price: 300,
+    bgHint: 'bg-[#fce4ec]',
+    preview: ['#fce4ec', '#e91e63'],
+  },
+};
+
+export const QUESTS = [
+  { id: 'win3',     label: 'Win 3 games',            target: 3,  reward: 150, stat: 'wins_today'         },
+  { id: 'scan5',    label: 'Use Scan 5 times',        target: 5,  reward: 100, stat: 'scan_today'         },
+  { id: 'large1',   label: 'Play on Large field',     target: 1,  reward: 200, stat: 'large_today'        },
+  { id: 'win1med',  label: 'Win on Medium or larger', target: 1,  reward: 120, stat: 'win_med_today'      },
+  { id: 'flag10',   label: 'Place 10 flags',          target: 10, reward: 80,  stat: 'flags_today'        },
+];
+
+export const DAILY_REWARDS = [100, 150, 200, 250, 300, 400, 500];
+
+export const NUMBER_COLORS = [
+  '', 'text-blue-400', 'text-green-400', 'text-red-400',
+  'text-purple-400', 'text-red-600', 'text-cyan-400',
+  'text-foreground', 'text-muted-foreground',
+];

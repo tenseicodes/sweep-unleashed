@@ -1,0 +1,83 @@
+{
+  "name": "PlayerProfile",
+  "type": "object",
+  "properties": {
+    "coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Total coins the player has"
+    },
+    "total_wins": {
+      "type": "number",
+      "default": 0
+    },
+    "total_games": {
+      "type": "number",
+      "default": 0
+    },
+    "last_login_date": {
+      "type": "string",
+      "description": "ISO date string of last login"
+    },
+    "login_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "owned_abilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "scan"
+      ],
+      "description": "List of ability ids the player owns"
+    },
+    "owned_skins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "default"
+      ],
+      "description": "List of skin ids the player owns"
+    },
+    "active_skin": {
+      "type": "string",
+      "default": "default"
+    },
+    "jce_owned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the player owns Judgement Cut End"
+    },
+    "scan_uses": {
+      "type": "number",
+      "default": 0,
+      "description": "Total times scan ability used (for quests)"
+    },
+    "large_field_games": {
+      "type": "number",
+      "default": 0,
+      "description": "Total games played on large field"
+    },
+    "quest_last_reset": {
+      "type": "string",
+      "description": "ISO date string of last quest reset"
+    },
+    "quest_progress": {
+      "type": "object",
+      "description": "Map of questId to progress number"
+    },
+    "quest_claimed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of quest IDs claimed today"
+    }
+  },
+  "required": []
+}

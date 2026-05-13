@@ -1,88 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
+    --background: 222 20% 8%;
+    --foreground: 210 40% 95%;
+    --card: 222 20% 11%;
+    --card-foreground: 210 40% 95%;
+    --popover: 222 20% 11%;
+    --popover-foreground: 210 40% 95%;
+    --primary: 262 80% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 20% 16%;
+    --secondary-foreground: 210 40% 90%;
+    --muted: 222 20% 14%;
+    --muted-foreground: 210 20% 55%;
+    --accent: 190 80% 55%;
+    --accent-foreground: 222 20% 8%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+    --border: 222 20% 18%;
+    --input: 222 20% 16%;
+    --ring: 262 80% 65%;
+    --radius: 0.75rem;
 
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Game specific */
+    --cell-bg: 222 20% 15%;
+    --cell-revealed: 222 20% 10%;
+    --cell-hover: 262 60% 25%;
+    --cell-mine: 0 75% 40%;
+    --cell-flag: 40 90% 55%;
+    --charge-color: 190 80% 55%;
+    --coin-color: 43 90% 55%;
   }
 }
-
-
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .font-mono {
+    font-family: 'Space Mono', monospace;
   }
 }
+
+/* ── Animations ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 6px 2px hsl(var(--primary) / 0.4); }
+  50% { box-shadow: 0 0 18px 6px hsl(var(--primary) / 0.8); }
+}
+
+@keyframes charge-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cell-reveal {
+  0% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
+  100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes mine-explode {
+  0% { transform: scale(1); background: hsl(var(--destructive)); }
+  30% { transform: scale(1.6); background: hsl(0 100% 70%); }
+  100% { transform: scale(1); background: hsl(var(--destructive)); }
+}
+
+@keyframes flag-plant {
+  0% { transform: translateY(-8px) rotate(-15deg); opacity: 0; }
+  70% { transform: translateY(2px) rotate(5deg); opacity: 1; }
+  100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes win-flash {
+  0%, 100% { box-shadow: 0 0 10px 3px hsl(var(--accent) / 0.5); }
+  50% { box-shadow: 0 0 30px 10px hsl(var(--accent) / 0.9); }
+}
+
+@keyframes jce-slash {
+  0% { transform: translateX(-150%) rotate(-45deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(150%) rotate(-45deg); opacity: 0; }
+}
+
+@keyframes jce-text {
+  0% { opacity: 0; transform: scale(0.7) translateY(10px); letter-spacing: 0.1em; }
+  20% { opacity: 1; transform: scale(1.05) translateY(0); letter-spacing: 0.25em; }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+
+@keyframes jce-overlay {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes scan-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.8); }
+  50% { box-shadow: 0 0 0 12px hsl(var(--accent) / 0); }
+}
+
+@keyframes coin-float {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+}
+
+@keyframes shield-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px hsl(190 80% 55% / 0.5); }
+  50% { box-shadow: 0 0 20px 8px hsl(190 80% 55% / 0.9); }
+}
+
+@keyframes detonate-ring {
+  0% { transform: scale(0.5); opacity: 1; border-width: 4px; }
+  100% { transform: scale(2); opacity: 0; border-width: 1px; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-60px); opacity: 0; }
+}
+
+@keyframes skin-neon-glow {
+  0%, 100% { box-shadow: 0 0 4px 1px #0ff8, 0 0 12px 3px #0ff3; }
+  50% { box-shadow: 0 0 8px 3px #0fff, 0 0 20px 6px #0ff6; }
+}
+
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-charge-pop { animation: charge-pop 0.3s ease-out; }
+.animate-cell-reveal { animation: cell-reveal 0.25s ease-out forwards; }
+.animate-mine-explode { animation: mine-explode 0.5s ease-out forwards; }
+.animate-flag-plant { animation: flag-plant 0.3s ease-out forwards; }
+.animate-win-flash { animation: win-flash 1s ease-in-out infinite; }
+.animate-scan-pulse { animation: scan-pulse 1s ease-out 2; }
+.animate-shield-pulse { animation: shield-pulse 1.5s ease-in-out infinite; }
+
+/* ── Skins ── */
+.skin-default .cell-unrevealed {
+  background: hsl(222 20% 18%);
+  border-color: hsl(222 20% 28%);
+  box-shadow: inset 0 1px 0 hsl(222 20% 28%), inset 0 -1px 0 hsl(222 20% 10%);
+}
+.skin-default .cell-unrevealed:hover {
+  background: hsl(262 40% 22%);
+  border-color: hsl(262 60% 40%);
+}
+.skin-default .cell-revealed {
+  background: hsl(222 20% 10%);
+  border-color: hsl(222 20% 15%);
+}
+
+.skin-neon .cell-unrevealed {
+  background: #0a0a1a;
+  border-color: #0ff4;
+  box-shadow: 0 0 6px #0ff2 inset;
+}
+.skin-neon .cell-revealed {
+  background: #050510;
+  border-color: #f0f4;
+}
+.skin-neon .cell-flag { color: #ff0ff0; }
+.skin-neon .cell-safe { color: #0ff; text-shadow: 0 0 8px #0ff; }
+
+.skin-cyberpunk .cell-unrevealed {
+  background: #1a0a1a;
+  border-color: #ff006688;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.skin-cyberpunk .cell-revealed {
+  background: #0d050d;
+  border-color: #ff006633;
+}
+.skin-cyberpunk .cell-safe { color: #ff0066; text-shadow: 0 0 6px #ff0066; }
+.skin-cyberpunk .cell-flag { color: #ffea00; }
+
+.skin-city .cell-unrevealed {
+  background: linear-gradient(135deg, #2a3042 0%, #1e2535 100%);
+  border-color: #4a5568;
+}
+.skin-city .cell-revealed {
+  background: #161c2a;
+  border-color: #2d3748;
+}
+.skin-city .cell-safe { color: #90cdf4; }
+.skin-city .cell-flag { color: #fc8181; }
+
+.skin-sakura .cell-unrevealed {
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  border-color: #f48fb1;
+}
+.skin-sakura .cell-revealed {
+  background: #fce4ec88;
+  border-color: #f48fb160;
+}
+.skin-sakura .cell-safe { color: #880e4f; }
+.skin-sakura .cell-flag { color: #e91e63; }
+.skin-sakura .cell-mine { filter: hue-rotate(280deg); }
