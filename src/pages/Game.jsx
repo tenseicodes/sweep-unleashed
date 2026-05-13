@@ -264,6 +264,7 @@ export default function Game() {
     }
 
     if (id === 'jj') {
+      SFX.jj?.();
       setCharges(c => c - scaledCharges);
       const newCells = janeJuliet(cells, cfg.rows, cfg.cols);
       setPendingJjCells(newCells);

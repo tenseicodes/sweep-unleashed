@@ -93,11 +93,34 @@ export const SFX = {
     });
   },
   jce() {
-    // Big dramatic build-up
-    playNoise({ freq: 100, duration: 1.8, gain: 0.6, q: 0.2 });
-    [200, 400, 800, 1600, 3200].forEach((f, i) => {
-      setTimeout(() => playTone({ freq: f, freqEnd: f * 0.5, type: 'sawtooth', duration: 0.4, gain: 0.3, decay: 0.35 }), i * 80);
+    // Katana slash series — sharp metallic sweeps, each slightly offset
+    const slashTimes = [0, 90, 180, 270, 380, 500, 640];
+    slashTimes.forEach((t) => {
+      setTimeout(() => {
+        // High metallic "zing" sweep
+        playTone({ freq: 3200, freqEnd: 800, type: 'sawtooth', duration: 0.18, gain: 0.18, attack: 0.002, decay: 0.16 });
+        // Thin noise burst for the "cut" texture
+        playNoise({ freq: 3000, duration: 0.12, gain: 0.14, q: 3 });
+      }, t);
     });
+    // Final heavy impact at the end
+    setTimeout(() => {
+      playNoise({ freq: 200, duration: 0.35, gain: 0.28, q: 0.4 });
+      playTone({ freq: 220, freqEnd: 80, type: 'sawtooth', duration: 0.4, gain: 0.22, attack: 0.01, decay: 0.38 });
+    }, 780);
+  },
+  jj() {
+    // Beam charge-up then horizontal sweep
+    // Charge hum build
+    playTone({ freq: 220, freqEnd: 880, type: 'sine', duration: 0.9, gain: 0.2, attack: 0.08, decay: 0.82 });
+    setTimeout(() => playTone({ freq: 440, freqEnd: 1760, type: 'triangle', duration: 0.7, gain: 0.18, attack: 0.04, decay: 0.65 }), 200);
+    // Beam fire — high-pitched energy sweep
+    setTimeout(() => {
+      playTone({ freq: 1800, freqEnd: 3200, type: 'sine', duration: 0.45, gain: 0.25, attack: 0.02, decay: 0.42 });
+      playNoise({ freq: 4000, duration: 0.5, gain: 0.2, q: 1.5 });
+    }, 1100);
+    // Resonant tail
+    setTimeout(() => playTone({ freq: 600, freqEnd: 200, type: 'sine', duration: 0.5, gain: 0.14, attack: 0.01, decay: 0.48 }), 1400);
   },
   coinEarn() {
     playTone({ freq: 1400, freqEnd: 1800, type: 'sine', duration: 0.1, gain: 0.15, decay: 0.08 });

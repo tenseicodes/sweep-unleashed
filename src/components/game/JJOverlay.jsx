@@ -12,11 +12,14 @@ export default function JJOverlay({ active, onComplete }) {
     if (!active) { setPhase('idle'); return; }
 
     setPhase('intro');
-    timers.current.push(setTimeout(() => setPhase('flash'), 1200));
+    // After intro → beam sweep
+    timers.current.push(setTimeout(() => setPhase('beam'), 1300));
+    // After beam → flash & done
+    timers.current.push(setTimeout(() => setPhase('flash'), 1900));
     timers.current.push(setTimeout(() => {
       setPhase('done');
       onComplete?.();
-    }, 1700));
+    }, 2300));
 
     return () => timers.current.forEach(clearTimeout);
   }, [active]);
@@ -25,98 +28,131 @@ export default function JJOverlay({ active, onComplete }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none select-none">
-      {/* Dark overlay */}
+      {/* Dark overlay — fades out during beam */}
       <motion.div
         className="absolute inset-0 bg-black"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'flash' ? 0 : 0.92 }}
-        transition={{ duration: 0.2 }}
+        animate={{ opacity: phase === 'beam' ? 0.6 : phase === 'flash' ? 0 : 0.92 }}
+        transition={{ duration: 0.25 }}
       />
 
-      {/* Animated cyan beam streaks */}
+      {/* ── INTRO phase: radial beams + name card ── */}
       <AnimatePresence>
         {phase === 'intro' && (
           <>
+            {/* Radial burst lines */}
             {[...Array(6)].map((_, i) => (
               <motion.div
-                key={i}
+                key={`burst-${i}`}
                 className="absolute pointer-events-none"
                 style={{
-                  left: '50%',
-                  top: '50%',
+                  left: '50%', top: '50%',
                   width: `${60 + i * 12}vw`,
                   height: `${1 + (i % 3)}px`,
                   background: 'linear-gradient(90deg, transparent 0%, #22d3ee 40%, #ffffff 60%, #22d3ee 80%, transparent 100%)',
                   boxShadow: '0 0 16px 4px #22d3ee88',
                   transformOrigin: 'center center',
                   rotate: `${i * 30}deg`,
-                  translateX: '-50%',
-                  translateY: '-50%',
+                  translateX: '-50%', translateY: '-50%',
                 }}
                 initial={{ scaleX: 0, opacity: 0 }}
                 animate={{ scaleX: [0, 1, 0.9, 0], opacity: [0, 1, 0.8, 0] }}
                 transition={{ delay: i * 0.08, duration: 0.7, ease: 'easeOut' }}
               />
             ))}
+
+            {/* Name card */}
+            <motion.div
+              className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <motion.div
+                className="h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent"
+                initial={{ width: 0 }} animate={{ width: '40vw' }}
+                transition={{ duration: 0.35, delay: 0.05 }}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, type: 'spring', stiffness: 180, damping: 14 }}
+                className="flex flex-col items-center gap-2"
+              >
+                <h1
+                  className="font-arcade text-4xl sm:text-6xl text-cyan-300 leading-none tracking-tight"
+                  style={{ textShadow: '0 0 40px #22d3ee, 0 0 80px #0891b260' }}
+                >
+                  Lets larp!
+                </h1>
+              </motion.div>
+              <motion.p
+                className="font-arcade text-[10px] tracking-[0.4em] text-cyan-200/60"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                transition={{ delay: 0.35 }}
+              >
+                Just this once.
+              </motion.p>
+              <motion.div
+                className="h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent"
+                initial={{ width: 0 }} animate={{ width: '40vw' }}
+                transition={{ duration: 0.35, delay: 0.25 }}
+              />
+            </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Name card */}
+      {/* ── BEAM phase: Takako-Ryu-style horizontal beam left → right ── */}
       <AnimatePresence>
-        {phase === 'intro' && (
+        {phase === 'beam' && (
           <motion.div
-            key="namecard"
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <motion.div
-              className="h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent"
-              initial={{ width: 0 }} animate={{ width: '40vw' }}
-              transition={{ duration: 0.35, delay: 0.05 }}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.15, type: 'spring', stiffness: 180, damping: 14 }}
-              className="flex flex-col items-center gap-2"
-            >
-              <h1
-                className="font-arcade text-4xl sm:text-6xl text-cyan-300 leading-none tracking-tight"
-                style={{ textShadow: '0 0 40px #22d3ee, 0 0 80px #0891b260' }}
-              >
-                Lets larp!
-              </h1>
-            </motion.div>
-
-            <motion.p
-              className="font-arcade text-[10px] tracking-[0.4em] text-cyan-200/60"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 0.35 }}
-            >
-              Just this once.
-            </motion.p>
-
-            <motion.div
-              className="h-px bg-gradient-to-r from-transparent via-cyan-300/80 to-transparent"
-              initial={{ width: 0 }} animate={{ width: '40vw' }}
-              transition={{ duration: 0.35, delay: 0.25 }}
-            />
-          </motion.div>
+            key="beam-sweep"
+            className="absolute"
+            style={{
+              top: '50%',
+              left: '-10vw',
+              width: '120vw',
+              height: '6px',
+              translateY: '-50%',
+              background: 'linear-gradient(90deg, transparent 0%, #67e8f9 5%, #ffffff 40%, #22d3ee 70%, transparent 100%)',
+              boxShadow: '0 0 12px 6px #22d3ee, 0 0 40px 20px #0891b240, 0 0 2px 1px #fff',
+            }}
+            initial={{ scaleX: 0, opacity: 0, originX: 0 }}
+            animate={{ scaleX: [0, 1, 1], opacity: [0, 1, 0] }}
+            transition={{ duration: 0.55, ease: [0.1, 0.6, 0.9, 1], times: [0, 0.45, 1] }}
+          />
         )}
       </AnimatePresence>
 
-      {/* Flash */}
+      {/* Beam ambient glow band (wider, softer) */}
+      <AnimatePresence>
+        {phase === 'beam' && (
+          <motion.div
+            key="beam-glow"
+            className="absolute"
+            style={{
+              top: '50%',
+              left: '-10vw',
+              width: '120vw',
+              height: '80px',
+              translateY: '-50%',
+              background: 'linear-gradient(90deg, transparent 0%, #0891b240 20%, #22d3ee30 50%, transparent 100%)',
+            }}
+            initial={{ scaleX: 0, opacity: 0, originX: 0 }}
+            animate={{ scaleX: [0, 1, 1], opacity: [0, 0.8, 0] }}
+            transition={{ duration: 0.6, ease: [0.1, 0.5, 0.9, 1], times: [0, 0.4, 1] }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── FLASH phase ── */}
       <AnimatePresence>
         {phase === 'flash' && (
           <motion.div
             key="flash"
             className="absolute inset-0"
             style={{ background: 'radial-gradient(ellipse at center, #22d3ee 0%, transparent 70%)' }}
-            initial={{ opacity: 0.8 }}
+            initial={{ opacity: 0.7 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.2, 0, 0.8, 1] }}
+            transition={{ duration: 0.4, ease: [0.2, 0, 0.8, 1] }}
           />
         )}
       </AnimatePresence>
