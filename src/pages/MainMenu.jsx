@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
-import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
+import { FIELD_SIZES, ABILITIES, CHARGE_SCALE } from '@/lib/gameConstants';
 import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame } from 'lucide-react';
 import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
 
@@ -249,7 +249,7 @@ export default function MainMenu() {
                         {isSelected && <span className="ml-auto text-[8px] font-arcade text-primary">✓</span>}
                       </div>
                       <p className="text-[9px] text-muted-foreground leading-relaxed">{ab.description}</p>
-                      <span className="text-[8px] font-arcade text-yellow-400/70">{ab.charges} ⚡ COST</span>
+                      <span className="text-[8px] font-arcade text-yellow-400/70">{Math.round(ab.charges * (CHARGE_SCALE[selectedSize] || 1))} ⚡ COST</span>
                     </motion.button>
                   );
                 })}
