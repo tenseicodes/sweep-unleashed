@@ -9,6 +9,7 @@ import { Trophy, ShoppingBag, Scroll, User, Swords, ChevronRight, Star, Coins } 
 import ShopModal from '@/components/shop/ShopModal';
 import DailyRewardModal from '@/components/ui/DailyRewardModal';
 import QuestPanel from '@/components/ui/QuestPanel';
+import GameHistoryPanel from '@/components/game/GameHistoryPanel';
 import { toast } from 'sonner';
 
 const MENU = [
@@ -285,20 +286,25 @@ export default function MainMenu() {
           <motion.div
             key="profile"
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
-            className="flex flex-col gap-4 relative z-10 w-full max-w-md px-6"
+            className="flex flex-col gap-4 relative z-10 w-full max-w-md px-6 max-h-screen overflow-y-auto pb-8"
           >
             <BackButton onClick={() => setScreen('main')} />
             <h2 className="font-arcade text-base text-primary text-center tracking-wider">PROFILE</h2>
-            <div className="bg-card border border-border/50 rounded-2xl p-6 flex flex-col gap-4">
+            <div className="bg-card border border-border/50 rounded-2xl p-5 flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-3xl">
+                <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-2xl shrink-0">
                   👤
                 </div>
                 <div>
                   <p className="font-arcade text-[10px] text-foreground">PLAYER</p>
                   <p className="font-arcade text-[8px] text-muted-foreground mt-1">
-                    STREAK: {profile?.login_streak || 0} DAYS
+                    LOGIN STREAK: {profile?.login_streak || 0}D
                   </p>
+                  {(profile?.win_streak || 0) > 0 && (
+                    <p className="font-arcade text-[8px] text-orange-400 mt-0.5">
+                      🔥 WIN STREAK: {profile.win_streak}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -306,7 +312,7 @@ export default function MainMenu() {
                   { label: 'WINS', val: profile?.total_wins || 0, color: 'text-primary' },
                   { label: 'GAMES', val: profile?.total_games || 0, color: 'text-foreground' },
                   { label: 'COINS', val: profile?.coins || 0, color: 'text-yellow-400' },
-                  { label: 'ABILITIES', val: allOwned.length, color: 'text-cyan-400' },
+                  { label: 'WIN STREAK', val: profile?.win_streak || 0, color: 'text-orange-400' },
                 ].map(s => (
                   <div key={s.label} className="bg-secondary/50 rounded-xl p-3 text-center">
                     <p className={`font-arcade text-lg ${s.color}`}>{s.val}</p>
@@ -332,6 +338,12 @@ export default function MainMenu() {
                 <p className="font-arcade text-[9px] text-muted-foreground mb-2">ACTIVE SKIN</p>
                 <span className="font-arcade text-[10px] text-accent capitalize">{profile?.active_skin || 'default'}</span>
               </div>
+            </div>
+
+            {/* Game History */}
+            <div className="bg-card border border-border/50 rounded-2xl p-4">
+              <p className="font-arcade text-[9px] text-muted-foreground mb-3 tracking-widest">GAME HISTORY</p>
+              <GameHistoryPanel />
             </div>
           </motion.div>
         )}

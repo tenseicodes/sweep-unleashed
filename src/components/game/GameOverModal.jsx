@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Trophy, Skull, RefreshCw, ShoppingBag, Home } from 'lucide-react';
 
-export default function GameOverModal({ won, time, coinsEarned, onRestart, onShop, onMainMenu }) {
+export default function GameOverModal({ won, time, coinsEarned, onRestart, onShop, onMainMenu, streak, multiplier }) {
   const mins = String(Math.floor(time / 60)).padStart(2, '0');
   const secs = String(time % 60).padStart(2, '0');
 
@@ -40,9 +40,19 @@ export default function GameOverModal({ won, time, coinsEarned, onRestart, onSho
           </>
         )}
 
-        <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-lg px-4 py-2">
-          <span className="text-xl">🪙</span>
-          <span className="font-arcade text-[10px] text-yellow-400">+{coinsEarned} COINS</span>
+        <div className="flex flex-col items-center gap-2 w-full">
+          <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-lg px-4 py-2">
+            <span className="text-xl">🪙</span>
+            <span className="font-arcade text-[10px] text-yellow-400">+{coinsEarned} COINS</span>
+          </div>
+          {won && streak > 1 && (
+            <div className="flex items-center gap-2 bg-orange-400/10 border border-orange-400/30 rounded-lg px-4 py-2">
+              <span className="text-base">🔥</span>
+              <span className="font-arcade text-[9px] text-orange-400">
+                {streak} WIN STREAK · ×{multiplier} BONUS
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 w-full">

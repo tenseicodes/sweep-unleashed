@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
+import { base44 } from '@/api/base44Client';
 import { createBoard, floodReveal, checkWin, getSafeCells, revealArea, detonateArea, judgementCutEnd } from '@/lib/gameLogic';
 import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
@@ -17,12 +18,18 @@ import ShopModal from '@/components/shop/ShopModal';
 import { Button } from '@/components/ui/button';
 import { Home, RefreshCw, X } from 'lucide-react';
 
-const COIN_SINGLE   = 5;
-const COIN_CHUNK    = 10;
+const COIN_SINGLE    = 5;
+const COIN_CHUNK     = 10;
 const COIN_WIN_BONUS = 1000;
-const CHARGE_SINGLE = 1;
-const CHARGE_CHUNK  = 3;
+const CHARGE_SINGLE  = 1;
+const CHARGE_CHUNK   = 3;
 const CHUNK_THRESHOLD = 3;
+
+// Streak multiplier: streak 1→1x, 2→1.5x, 3→2x, 4→2.5x, 5+→3x
+function streakMultiplier(streak) {
+  if (streak <= 1) return 1;
+  return Math.min(1 + (streak - 1) * 0.5, 3);
+}
 
 export default function Game() {
   const navigate = useNavigate();
@@ -114,21 +121,29 @@ export default function Game() {
   const handleWin = useCallback(async (finalCells) => {
     SFX.win?.();
     setGameState('won');
-    awardCoins(COIN_WIN_BONUS);
-    const totalCoins = coinsEarnedRef.current + COIN_WIN_BONUS;
+    const newStreak = (profile?.win_streak || 0) + 1;
+    const mult = streakMultiplier(newStreak);
+    const bonus = Math.round(COIN_WIN_BONUS * mult);
+    awardCoins(bonus);
+    const totalCoins = coinsEarnedRef.current + bonus;
     await addCoins(totalCoins);
-    const isLarge  = fieldSize === 'large';
+    const isLarge   = fieldSize === 'large';
     const isMedPlus = fieldSize === 'medium' || fieldSize === 'large';
     await updateProfile({
       total_wins:  (profile?.total_wins  || 0) + 1,
       total_games: (profile?.total_games || 0) + 1,
+      win_streak: newStreak,
       ...(isLarge ? { large_field_games: (profile?.large_field_games || 0) + 1 } : {}),
+    });
+    await base44.entities.GameHistory.create({
+      result: 'win', field_size: fieldSize, ability_used: lockedAbility,
+      coins_earned: totalCoins, time_seconds: time, win_streak: newStreak, multiplier: mult,
     });
     await incrementQuestStat('wins_today');
     if (isMedPlus) await incrementQuestStat('win_med_today');
     if (isLarge)   await incrementQuestStat('large_today');
-    setGameOverModal({ won: true, coins: totalCoins });
-  }, [addCoins, fieldSize, profile, updateProfile, incrementQuestStat, awardCoins]);
+    setGameOverModal({ won: true, coins: totalCoins, streak: newStreak, multiplier: mult });
+  }, [addCoins, fieldSize, profile, updateProfile, incrementQuestStat, awardCoins, lockedAbility, time]);
 
   // ── Cell click ──
   const handleCellClick = useCallback(async (cell) => {
@@ -174,8 +189,12 @@ export default function Game() {
       setGameState('lost');
       const lossCoins = coinsEarnedRef.current;
       if (lossCoins > 0) await addCoins(lossCoins);
-      updateProfile({ total_games: (profile?.total_games || 0) + 1 });
-      setGameOverModal({ won: false, coins: lossCoins });
+      await updateProfile({ total_games: (profile?.total_games || 0) + 1, win_streak: 0 });
+      await base44.entities.GameHistory.create({
+        result: 'loss', field_size: fieldSize, ability_used: lockedAbility,
+        coins_earned: lossCoins, time_seconds: time, win_streak: 0, multiplier: 1,
+      });
+      setGameOverModal({ won: false, coins: lossCoins, streak: 0, multiplier: 1 });
       return;
     }
 
@@ -299,6 +318,8 @@ export default function Game() {
             won={gameOverModal.won}
             time={time}
             coinsEarned={gameOverModal.coins}
+            streak={gameOverModal.streak}
+            multiplier={gameOverModal.multiplier}
             onRestart={handleRestart}
             onShop={() => { setGameOverModal(null); setShopOpen(true); }}
             onMainMenu={handleMainMenu}
@@ -310,20 +331,24 @@ export default function Game() {
 
         {/* ── Top bar ── */}
         <div className="w-full max-w-4xl flex items-center justify-between">
-          <button onClick={handleMainMenu}
-            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground hover:text-foreground transition-colors"
+          <button
+            onClick={handleMainMenu}
+            onTouchEnd={(e) => { e.preventDefault(); handleMainMenu(); }}
+            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground active:text-foreground min-w-[44px] min-h-[44px] px-2"
           >
-            <Home className="w-3 h-3" /> MENU
+            <Home className="w-3.5 h-3.5" /> MENU
           </button>
 
           <h1 className="font-arcade text-[9px] sm:text-sm bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             SWEEP UNLEASHED
           </h1>
 
-          <button onClick={handleRestart}
-            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground hover:text-foreground transition-colors"
+          <button
+            onClick={handleRestart}
+            onTouchEnd={(e) => { e.preventDefault(); handleRestart(); }}
+            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground active:text-foreground min-w-[44px] min-h-[44px] px-2"
           >
-            <RefreshCw className="w-3 h-3" /> NEW
+            <RefreshCw className="w-3.5 h-3.5" /> NEW
           </button>
         </div>
 

@@ -1,0 +1,61 @@
+{
+  "name": "GameHistory",
+  "type": "object",
+  "properties": {
+    "result": {
+      "type": "string",
+      "enum": [
+        "win",
+        "loss"
+      ],
+      "description": "Game outcome"
+    },
+    "field_size": {
+      "type": "string",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ]
+    },
+    "ability_used": {
+      "type": "string",
+      "description": "Ability ID used in this game"
+    },
+    "coins_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "time_seconds": {
+      "type": "number",
+      "default": 0
+    },
+    "win_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Streak at time of this game"
+    },
+    "multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Coin multiplier applied"
+    }
+  },
+  "required": [
+    "result"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

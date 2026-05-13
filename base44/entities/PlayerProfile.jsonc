@@ -4,8 +4,7 @@
   "properties": {
     "coins": {
       "type": "number",
-      "default": 0,
-      "description": "Total coins the player has"
+      "default": 0
     },
     "total_wins": {
       "type": "number",
@@ -16,12 +15,16 @@
       "default": 0
     },
     "last_login_date": {
-      "type": "string",
-      "description": "ISO date string of last login"
+      "type": "string"
     },
     "login_streak": {
       "type": "number",
       "default": 0
+    },
+    "win_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current consecutive win streak"
     },
     "owned_abilities": {
       "type": "array",
@@ -30,8 +33,7 @@
       },
       "default": [
         "scan"
-      ],
-      "description": "List of ability ids the player owns"
+      ]
     },
     "owned_skins": {
       "type": "array",
@@ -40,8 +42,7 @@
       },
       "default": [
         "default"
-      ],
-      "description": "List of skin ids the player owns"
+      ]
     },
     "active_skin": {
       "type": "string",
@@ -49,34 +50,28 @@
     },
     "jce_owned": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether the player owns Judgement Cut End"
+      "default": false
     },
     "scan_uses": {
       "type": "number",
-      "default": 0,
-      "description": "Total times scan ability used (for quests)"
+      "default": 0
     },
     "large_field_games": {
       "type": "number",
-      "default": 0,
-      "description": "Total games played on large field"
+      "default": 0
     },
     "quest_last_reset": {
-      "type": "string",
-      "description": "ISO date string of last quest reset"
+      "type": "string"
     },
     "quest_progress": {
-      "type": "object",
-      "description": "Map of questId to progress number"
+      "type": "object"
     },
     "quest_claimed": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "default": [],
-      "description": "List of quest IDs claimed today"
+      "default": []
     }
   },
   "required": [],
