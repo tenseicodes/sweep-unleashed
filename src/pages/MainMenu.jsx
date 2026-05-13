@@ -366,7 +366,8 @@ function BackButton({ onClick }) {
     <motion.button
       whileHover={{ x: -3 }} whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-arcade text-[9px] tracking-wider self-start"
+      onTouchEnd={(e) => { e.preventDefault(); onClick(); }}
+      className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-arcade text-[9px] tracking-wider self-start min-h-[44px] min-w-[44px] px-2"
     >
       ◀ BACK
     </motion.button>
