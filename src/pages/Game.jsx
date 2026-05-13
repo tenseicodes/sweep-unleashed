@@ -293,11 +293,11 @@ export default function Game() {
   const handleRestart = () => { setGameOverModal(null); initBoard(); };
   const handleMainMenu = () => navigate('/');
 
+  const ab = ABILITIES[lockedAbility];
   const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon };
   const AbilityIcon = ab ? (ABILITY_ICON_MAP[ab.id] || null) : null;
 
   const flagsLeft = cfg.mines - flagsPlaced;
-  const ab = ABILITIES[lockedAbility];
   const canUseAbility = ab && charges >= ab.charges;
   const isTargeting   = activeAbility === lockedAbility;
   const isShieldOn    = lockedAbility === 'shield' && shieldActive;
