@@ -214,10 +214,11 @@ export default function Game() {
     const revealed = floodReveal(currentCells, cell.id, cfg.rows, cfg.cols);
     const newlyRevealed = revealed.filter((nc, i) => nc.isRevealed && !cells[i].isRevealed);
     const count   = newlyRevealed.length;
-    const isChunk = count >= CHUNK_THRESHOLD;
+    const isFirstClick = gameState === 'idle';
+    const isChunk = !isFirstClick && count >= CHUNK_THRESHOLD;
 
     if (isChunk) SFX.revealChunk?.(); else SFX.reveal?.();
-    setCharges(c => c + (isChunk ? CHARGE_CHUNK : CHARGE_SINGLE));
+    setCharges(c => c + (isFirstClick ? 1 : isChunk ? CHARGE_CHUNK : CHARGE_SINGLE));
     awardCoins(isChunk ? count * COIN_CHUNK : count * COIN_SINGLE);
     setCells(revealed);
     if (checkWin(revealed)) handleWin(revealed);
