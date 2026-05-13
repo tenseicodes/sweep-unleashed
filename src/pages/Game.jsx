@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 import { base44 } from '@/api/base44Client';
-import { createBoard, floodReveal, checkWin, getSafeCells, revealArea, detonateArea, judgementCutEnd } from '@/lib/gameLogic';
+import { createBoard, placeMines, floodReveal, checkWin, getSafeCells, revealArea, detonateArea, judgementCutEnd } from '@/lib/gameLogic';
 import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { SFX } from '@/lib/sounds';
@@ -72,7 +72,7 @@ export default function Game() {
 
   // ── Init board ──
   const initBoard = useCallback(() => {
-    setCells(createBoard(cfg.rows, cfg.cols, cfg.mines));
+    setCells(createBoard(cfg.rows, cfg.cols));
     setGameState('idle');
     setCharges(0);
     setSessionCoins(0);
@@ -149,13 +149,19 @@ export default function Game() {
   const handleCellClick = useCallback(async (cell) => {
     if (gameState === 'won' || gameState === 'lost') return;
     if (cell.isFlagged) return;
-    if (gameState === 'idle') setGameState('playing');
+    let currentCells = cells;
+    if (gameState === 'idle') {
+      // Place mines on first click, guaranteeing a safe zone around the clicked cell
+      currentCells = placeMines(cells, cfg.rows, cfg.cols, cfg.mines, cell.id);
+      setCells(currentCells);
+      setGameState('playing');
+    }
     if (cell.isRevealed) return;
 
     // Targeting abilities
     if (activeAbility === 'detonate') {
       SFX.detonate?.();
-      const { cells: newCells } = detonateArea(cells, cell.row, cell.col, cfg.rows, cfg.cols);
+      const { cells: newCells } = detonateArea(currentCells, cell.row, cell.col, cfg.rows, cfg.cols);
       setCells(newCells);
       setCharges(c => c - ABILITIES.detonate.charges);
       setActiveAbility(null);
@@ -165,7 +171,7 @@ export default function Game() {
     }
     if (activeAbility === 'reveal_zone') {
       SFX.revealZone?.();
-      const newCells = revealArea(cells, cell.row, cell.col, 2, cfg.rows, cfg.cols);
+      const newCells = revealArea(currentCells, cell.row, cell.col, 2, cfg.rows, cfg.cols);
       setCells(newCells);
       setCharges(c => c - ABILITIES.reveal_zone.charges);
       setActiveAbility(null);
@@ -174,8 +180,11 @@ export default function Game() {
       return;
     }
 
+    // Check the cell from currentCells (may differ from cells on first click)
+    const currentCell = currentCells[cell.id];
+
     // Mine hit
-    if (cell.isMine) {
+    if (currentCell.isMine) {
       if (shieldActive) {
         SFX.shieldBlock?.();
         setShieldActive(false);
@@ -184,7 +193,7 @@ export default function Game() {
         return;
       }
       SFX.lose?.();
-      const newCells = cells.map(c => c.isMine ? { ...c, isRevealed: true } : c);
+      const newCells = currentCells.map(c => c.isMine ? { ...c, isRevealed: true } : c);
       setCells(newCells);
       setGameState('lost');
       const lossCoins = coinsEarnedRef.current;
@@ -199,7 +208,7 @@ export default function Game() {
     }
 
     // Safe flood reveal
-    const revealed = floodReveal(cells, cell.id, cfg.rows, cfg.cols);
+    const revealed = floodReveal(currentCells, cell.id, cfg.rows, cfg.cols);
     const newlyRevealed = revealed.filter((nc, i) => nc.isRevealed && !cells[i].isRevealed);
     const count   = newlyRevealed.length;
     const isChunk = count >= CHUNK_THRESHOLD;

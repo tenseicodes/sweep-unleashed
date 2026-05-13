@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
-import { Trophy, ShoppingBag, Scroll, User, Swords, ChevronRight, Star, Coins } from 'lucide-react';
+import { Trophy, ShoppingBag, Scroll, User, Swords, ChevronRight, Play, LayoutGrid, MapPin, Zap, Shield, Bomb, Globe, ScanSearch, Flame } from 'lucide-react';
 
 // ── Sub-screens ──
 import ShopModal from '@/components/shop/ShopModal';
@@ -13,11 +13,11 @@ import GameHistoryPanel from '@/components/game/GameHistoryPanel';
 import { toast } from 'sonner';
 
 const MENU = [
-  { id: 'play',       label: 'PLAY',       icon: '⚔️' },
-  { id: 'shop',       label: 'SHOP',       icon: '🛒' },
-  { id: 'quests',     label: 'QUESTS',     icon: '📜' },
-  { id: 'profile',    label: 'PROFILE',    icon: '👤' },
-  { id: 'leaderboard',label: 'LEADERBOARD',icon: '🏆' },
+  { id: 'play',        label: 'PLAY',        Icon: Play },
+  { id: 'shop',        label: 'SHOP',        Icon: ShoppingBag },
+  { id: 'quests',      label: 'QUESTS',      Icon: Scroll },
+  { id: 'profile',     label: 'PROFILE',     Icon: User },
+  { id: 'leaderboard', label: 'LEADERBOARD', Icon: Trophy },
 ];
 
 export default function MainMenu() {
@@ -135,7 +135,7 @@ export default function MainMenu() {
 
             {/* Coins badge */}
             <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-full px-4 py-1.5">
-              <span className="text-base">🪙</span>
+              <Zap className="w-3.5 h-3.5 text-yellow-400" />
               <span className="font-arcade text-[10px] text-yellow-400">{profile?.coins || 0}</span>
             </div>
 
@@ -159,7 +159,7 @@ export default function MainMenu() {
                       : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/20'}
                   `}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <item.Icon className={`w-4 h-4 shrink-0 ${item.id === 'play' ? 'text-primary' : 'text-white/60'}`} />
                   <span>{item.label}</span>
                   <ChevronRight className="w-3 h-3 ml-auto opacity-50" />
                 </motion.button>
@@ -207,7 +207,7 @@ export default function MainMenu() {
                         : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}
                     `}
                   >
-                    <span className="text-2xl">{key === 'small' ? '🟢' : key === 'medium' ? '🟡' : '🔴'}</span>
+                    <LayoutGrid className={`w-6 h-6 ${key === 'small' ? 'text-green-400' : key === 'medium' ? 'text-yellow-400' : 'text-red-400'}`} />
                     <span>{cfg.label.toUpperCase()}</span>
                     <span className="text-[7px] text-muted-foreground">{cfg.rows}×{cfg.cols} · {cfg.mines} mines</span>
                   </motion.button>
@@ -292,8 +292,8 @@ export default function MainMenu() {
             <h2 className="font-arcade text-base text-primary text-center tracking-wider">PROFILE</h2>
             <div className="bg-card border border-border/50 rounded-2xl p-5 flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-2xl shrink-0">
-                  👤
+                <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
+                  <User className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <p className="font-arcade text-[10px] text-foreground">PLAYER</p>
@@ -301,8 +301,8 @@ export default function MainMenu() {
                     LOGIN STREAK: {profile?.login_streak || 0}D
                   </p>
                   {(profile?.win_streak || 0) > 0 && (
-                    <p className="font-arcade text-[8px] text-orange-400 mt-0.5">
-                      🔥 WIN STREAK: {profile.win_streak}
+                    <p className="font-arcade text-[8px] text-orange-400 mt-0.5 flex items-center gap-1">
+                      <Flame className="w-3 h-3" /> WIN STREAK: {profile.win_streak}
                     </p>
                   )}
                 </div>

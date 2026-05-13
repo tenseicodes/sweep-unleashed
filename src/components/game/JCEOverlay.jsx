@@ -1,84 +1,65 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/**
- * DMC5-inspired Judgement Cut End overlay.
- *
- * Phase timeline:
- *   0ms   → 'intro'  : Black screen fades in, then Vergil-style name card appears
- *   900ms → 'cuts'   : Rapid blue/white cross-hatch slashes emanate from center,
- *                       each one a bright streak that appears and vanishes instantly
- *   2400ms→ 'impact' : Screen shatters white, then dark crackle lines visible
- *   2900ms→ 'done'   : Fade out, callback fired
- */
-
-// Generate a fixed set of slash descriptors
-function makeSlashes(n) {
-  const slashes = [];
+// Generate beams that originate from random screen edges/corners and shoot across
+function makeBeams(n) {
+  const beams = [];
   for (let i = 0; i < n; i++) {
-    // Alternate between two angle families, like DMC cross-hatch
-    const family = i % 2 === 0 ? 1 : -1;
-    const baseAngle = family * (38 + Math.random() * 22); // ~±38-60deg
-    slashes.push({
+    // Pick a random edge origin: 0=top, 1=right, 2=bottom, 3=left, or corners
+    const edge = Math.floor(Math.random() * 4);
+    let originX, originY;
+    switch (edge) {
+      case 0: originX = Math.random() * 100; originY = 0; break;
+      case 1: originX = 100; originY = Math.random() * 100; break;
+      case 2: originX = Math.random() * 100; originY = 100; break;
+      default: originX = 0; originY = Math.random() * 100; break;
+    }
+
+    // Angle pointing roughly toward center with some spread
+    const cx = 50, cy = 50;
+    const baseAngle = Math.atan2(cy - originY, cx - originX) * (180 / Math.PI);
+    const angle = baseAngle + (Math.random() - 0.5) * 50;
+
+    beams.push({
       id: i,
-      angle: baseAngle,
-      // Length: full-screen diagonal ish
-      length: 110 + Math.random() * 60, // vw
-      thickness: 1.5 + Math.random() * 3.5,
-      // Starting position: near center, spread outward
-      originX: 40 + Math.random() * 20, // % from left
-      originY: 35 + Math.random() * 30, // % from top
-      delay: i * 0.055,
-      color: Math.random() > 0.35 ? '#c8d8ff' : '#ffffff',
-      glow: Math.random() > 0.5 ? 16 : 8,
+      originX,
+      originY,
+      angle,
+      length: 80 + Math.random() * 80, // vw
+      thickness: 1 + Math.random() * 3,
+      delay: i * 0.06 + Math.random() * 0.1,
+      color: Math.random() > 0.3 ? '#ffffff' : '#c8d8ff',
+      glow: Math.random() > 0.5 ? 20 : 10,
+      duration: 0.5 + Math.random() * 0.4,
     });
   }
-  return slashes;
+  return beams;
 }
 
-// Crack lines that appear after the impact flash
-function makeCracks(n) {
-  return Array.from({ length: n }, (_, i) => ({
-    id: i,
-    x1: 40 + (Math.random() - 0.5) * 30,
-    y1: 40 + (Math.random() - 0.5) * 30,
-    dx: (Math.random() - 0.5) * 80,
-    dy: (Math.random() - 0.5) * 80,
-    angle: Math.random() * 360,
-    len: 15 + Math.random() * 40,
-  }));
-}
+const BEAM_COUNT = 35;
+// Generate fresh beams each render activation
+let beamData = makeBeams(BEAM_COUNT);
 
-const SLASH_COUNT = 28;
-const slashData = makeSlashes(SLASH_COUNT);
-const crackData = makeCracks(16);
-
-// ── Slash beam component ──
-function SlashBeam({ s, startDelay }) {
+function Beam({ b }) {
   return (
     <motion.div
       className="absolute pointer-events-none"
       style={{
-        left: `${s.originX}%`,
-        top: `${s.originY}%`,
-        width: `${s.length}vw`,
-        height: `${s.thickness}px`,
-        background: `linear-gradient(90deg, transparent 0%, ${s.color} 30%, ${s.color} 70%, transparent 100%)`,
-        boxShadow: `0 0 ${s.glow}px ${s.glow / 2}px ${s.color}`,
+        left: `${b.originX}%`,
+        top: `${b.originY}%`,
+        width: `${b.length}vw`,
+        height: `${b.thickness}px`,
+        background: `linear-gradient(90deg, ${b.color} 0%, ${b.color}cc 60%, transparent 100%)`,
+        boxShadow: `0 0 ${b.glow}px ${b.glow / 2}px ${b.color}88`,
         transformOrigin: 'left center',
-        transform: `rotate(${s.angle}deg)`,
-        translateX: '-50%',
-        translateY: '-50%',
+        rotate: b.angle,
       }}
       initial={{ scaleX: 0, opacity: 0 }}
-      animate={{
-        scaleX: [0, 1, 1, 0],
-        opacity: [0, 1, 0.9, 0],
-      }}
+      animate={{ scaleX: [0, 1, 1, 0], opacity: [0, 1, 0.85, 0] }}
       transition={{
-        delay: startDelay + s.delay,
-        duration: 0.22,
-        times: [0, 0.2, 0.6, 1],
+        delay: b.delay,
+        duration: b.duration,
+        times: [0, 0.15, 0.7, 1],
         ease: 'easeOut',
       }}
     />
@@ -89,7 +70,7 @@ export default function JCEOverlay({ active, onComplete }) {
   const [phase, setPhase] = useState('idle');
   const timers = useRef([]);
 
-  const CUTS_DURATION = SLASH_COUNT * 55 + 200; // ms
+  const CUTS_MS = BEAM_COUNT * 60 + 400;
 
   useEffect(() => {
     timers.current.forEach(clearTimeout);
@@ -97,13 +78,16 @@ export default function JCEOverlay({ active, onComplete }) {
 
     if (!active) { setPhase('idle'); return; }
 
+    // Regenerate beams each activation for variety
+    beamData = makeBeams(BEAM_COUNT);
+
     setPhase('intro');
-    timers.current.push(setTimeout(() => setPhase('cuts'),   900));
-    timers.current.push(setTimeout(() => setPhase('impact'), 900 + CUTS_DURATION));
+    timers.current.push(setTimeout(() => setPhase('cuts'),   800));
+    timers.current.push(setTimeout(() => setPhase('impact'), 800 + CUTS_MS));
     timers.current.push(setTimeout(() => {
       setPhase('done');
       onComplete?.();
-    }, 900 + CUTS_DURATION + 600));
+    }, 800 + CUTS_MS + 500));
 
     return () => timers.current.forEach(clearTimeout);
   }, [active]);
@@ -113,71 +97,58 @@ export default function JCEOverlay({ active, onComplete }) {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none select-none">
 
-      {/* === BASE DARK OVERLAY === */}
+      {/* Dark overlay */}
       <motion.div
         className="absolute inset-0 bg-black"
         initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'impact' ? 0 : 0.96 }}
-        transition={{ duration: 0.18 }}
+        animate={{ opacity: phase === 'impact' ? 0 : 0.92 }}
+        transition={{ duration: 0.2 }}
       />
 
-      {/* === INTRO: Name card === */}
+      {/* INTRO: Name card */}
       <AnimatePresence>
         {phase === 'intro' && (
           <motion.div
             key="namecard"
             className="absolute inset-0 flex flex-col items-center justify-center gap-3"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25 }}
           >
-            {/* Top decorative line */}
             <motion.div
               className="h-px bg-gradient-to-r from-transparent via-blue-300/80 to-transparent"
               initial={{ width: 0 }} animate={{ width: '40vw' }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              transition={{ duration: 0.35, delay: 0.05 }}
             />
-
-            {/* Character name label */}
             <motion.p
               className="font-arcade text-[8px] tracking-[0.6em] text-blue-300/70 uppercase"
               initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.1 }}
             >
               VERGIL
             </motion.p>
-
-            {/* Ability name */}
             <motion.div
               initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.22, type: 'spring', stiffness: 180, damping: 14 }}
+              transition={{ delay: 0.18, type: 'spring', stiffness: 180, damping: 14 }}
               className="flex flex-col items-center gap-1"
             >
-              <h1
-                className="font-arcade text-4xl sm:text-6xl text-white leading-none tracking-tight"
-                style={{ textShadow: '0 0 40px #a0c0ff, 0 0 80px #6080ff60' }}
-              >
+              <h1 className="font-arcade text-4xl sm:text-6xl text-white leading-none tracking-tight"
+                style={{ textShadow: '0 0 40px #a0c0ff, 0 0 80px #6080ff60' }}>
                 JUDGEMENT
               </h1>
-              <h1
-                className="font-arcade text-4xl sm:text-6xl text-white leading-none tracking-tight"
-                style={{ textShadow: '0 0 40px #a0c0ff, 0 0 80px #6080ff60' }}
-              >
+              <h1 className="font-arcade text-4xl sm:text-6xl text-white leading-none tracking-tight"
+                style={{ textShadow: '0 0 40px #a0c0ff, 0 0 80px #6080ff60' }}>
                 CUT END
               </h1>
             </motion.div>
-
-            {/* Bottom decorative line */}
             <motion.div
               className="h-px bg-gradient-to-r from-transparent via-blue-300/80 to-transparent"
               initial={{ width: 0 }} animate={{ width: '40vw' }}
-              transition={{ duration: 0.4, delay: 0.3 }}
+              transition={{ duration: 0.35, delay: 0.25 }}
             />
-
-            {/* Subtitle */}
             <motion.p
               className="font-arcade text-[7px] tracking-[0.4em] text-white/30"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.4 }}
             >
               ─ DARKSLAYER ─
             </motion.p>
@@ -185,66 +156,31 @@ export default function JCEOverlay({ active, onComplete }) {
         )}
       </AnimatePresence>
 
-      {/* === CUTS: rapid cross-hatch slashes === */}
+      {/* CUTS: beams from edges */}
       {(phase === 'cuts' || phase === 'impact') && (
         <>
-          {/* Blue screen-tint during cuts */}
+          {/* Subtle center convergence glow */}
           <motion.div
             className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse at center, #1a2a6630 0%, transparent 70%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.1 }}
+            style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 50%, #ffffff18 0%, transparent 70%)' }}
+            initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: CUTS_MS / 1000, times: [0, 0.3, 1] }}
           />
 
-          {slashData.map(s => (
-            <SlashBeam key={s.id} s={s} startDelay={0} />
-          ))}
-
-          {/* Center burst ring — like DMC's radial shockwave */}
-          <motion.div
-            className="absolute rounded-full border border-blue-200/60"
-            style={{ left: '50%', top: '50%', translateX: '-50%', translateY: '-50%' }}
-            initial={{ width: 0, height: 0, opacity: 1 }}
-            animate={{ width: '200vw', height: '200vw', opacity: 0 }}
-            transition={{ duration: (SLASH_COUNT * 55 + 200) / 1000, ease: 'easeOut' }}
-          />
+          {beamData.map(b => <Beam key={b.id} b={b} />)}
         </>
       )}
 
-      {/* === IMPACT: white flash + crack lines === */}
+      {/* IMPACT: white flash */}
       <AnimatePresence>
         {phase === 'impact' && (
-          <>
-            {/* Shattering white flash */}
-            <motion.div
-              key="flash"
-              className="absolute inset-0 bg-white"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.2, 0, 0.8, 1] }}
-            />
-
-            {/* Crack lines radiating from center */}
-            <div className="absolute inset-0">
-              {crackData.map(c => (
-                <motion.div
-                  key={c.id}
-                  className="absolute bg-blue-200/70"
-                  style={{
-                    left: `${c.x1}%`,
-                    top: `${c.y1}%`,
-                    width: `${c.len}vw`,
-                    height: '1px',
-                    transformOrigin: 'left center',
-                    transform: `rotate(${c.angle}deg)`,
-                    boxShadow: '0 0 4px 1px #a0c0ff80',
-                  }}
-                  initial={{ scaleX: 0, opacity: 1 }}
-                  animate={{ scaleX: 1, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: 'easeOut', delay: Math.random() * 0.1 }}
-                />
-              ))}
-            </div>
-          </>
+          <motion.div
+            key="flash"
+            className="absolute inset-0 bg-white"
+            initial={{ opacity: 0.9 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.2, 0, 0.8, 1] }}
+          />
         )}
       </AnimatePresence>
 

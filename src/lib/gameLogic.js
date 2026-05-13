@@ -1,8 +1,8 @@
 // Pure game logic helpers
 
-export function createBoard(rows, cols, mines) {
-  // 1. flat cells
-  const cells = Array.from({ length: rows * cols }, (_, i) => ({
+export function createBoard(rows, cols) {
+  // Create empty board — mines placed on first click
+  return Array.from({ length: rows * cols }, (_, i) => ({
     id: i,
     row: Math.floor(i / cols),
     col: i % cols,
@@ -11,25 +11,32 @@ export function createBoard(rows, cols, mines) {
     isFlagged: false,
     neighborCount: 0,
   }));
+}
 
-  // 2. place mines (defer until first click if desired; here place randomly)
+export function placeMines(cells, rows, cols, mines, safeIdx) {
+  const newCells = cells.map(c => ({ ...c }));
+  // Exclude the clicked cell and its neighbors from mine placement
+  const safeSet = new Set([safeIdx, ...getNeighborIndices(
+    newCells[safeIdx].row, newCells[safeIdx].col, rows, cols
+  )]);
+
   let placed = 0;
   while (placed < mines) {
-    const idx = Math.floor(Math.random() * cells.length);
-    if (!cells[idx].isMine) {
-      cells[idx].isMine = true;
+    const idx = Math.floor(Math.random() * newCells.length);
+    if (!newCells[idx].isMine && !safeSet.has(idx)) {
+      newCells[idx].isMine = true;
       placed++;
     }
   }
 
-  // 3. compute neighbor counts
-  for (const cell of cells) {
+  // Compute neighbor counts
+  for (const cell of newCells) {
     if (cell.isMine) continue;
     cell.neighborCount = getNeighborIndices(cell.row, cell.col, rows, cols)
-      .filter(ni => cells[ni].isMine).length;
+      .filter(ni => newCells[ni].isMine).length;
   }
 
-  return cells;
+  return newCells;
 }
 
 export function getNeighborIndices(row, col, rows, cols) {
