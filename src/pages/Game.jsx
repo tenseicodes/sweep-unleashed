@@ -304,24 +304,24 @@ export default function Game() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col items-center min-h-screen py-4 px-3 gap-3">
+      <div className="flex flex-col items-center min-h-screen py-2 px-2 gap-2">
 
         {/* ── Top bar ── */}
         <div className="w-full max-w-4xl flex items-center justify-between">
           <button onClick={handleMainMenu}
-            className="flex items-center gap-2 font-arcade text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Home className="w-3.5 h-3.5" /> MENU
+            <Home className="w-3 h-3" /> MENU
           </button>
 
-          <h1 className="font-arcade text-[11px] sm:text-sm bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="font-arcade text-[9px] sm:text-sm bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             SWEEP UNLEASHED
           </h1>
 
           <button onClick={handleRestart}
-            className="flex items-center gap-2 font-arcade text-[9px] text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 font-arcade text-[8px] text-muted-foreground hover:text-foreground transition-colors"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> NEW
+            <RefreshCw className="w-3 h-3" /> NEW
           </button>
         </div>
 
@@ -337,14 +337,14 @@ export default function Game() {
         {ab && (
           <div className="w-full max-w-4xl">
             <motion.div
-              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${ab.bgColor} ${ab.borderColor}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${ab.bgColor} ${ab.borderColor}
                 ${isShieldOn ? 'animate-shield-pulse' : ''}`}
               layout
             >
-              <span className="text-2xl">{ab.icon}</span>
-              <div className="flex-1">
-                <p className={`font-arcade text-[9px] ${ab.color} tracking-wider`}>{ab.name.toUpperCase()}</p>
-                <p className="text-[10px] text-muted-foreground">{ab.description}</p>
+              <span className="text-lg shrink-0">{ab.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className={`font-arcade text-[8px] ${ab.color} tracking-wider truncate`}>{ab.name.toUpperCase()}</p>
+                <p className="text-[9px] text-muted-foreground line-clamp-1">{ab.description}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
                 <span className="font-arcade text-[8px] text-muted-foreground">{charges}/{ab.charges} ⚡</span>

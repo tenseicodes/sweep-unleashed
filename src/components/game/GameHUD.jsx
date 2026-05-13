@@ -7,18 +7,18 @@ export default function GameHUD({ flagsLeft, time, charges, coins, sessionCoins 
   const secs = String(time % 60).padStart(2, '0');
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
+    <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center gap-1 bg-card border border-border/50 rounded-lg px-2 py-1.5">
         <Flag className="w-3 h-3 text-yellow-400" />
-        <span className="font-arcade text-[10px] text-yellow-400">{flagsLeft}</span>
+        <span className="font-arcade text-[9px] text-yellow-400">{flagsLeft}</span>
       </div>
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
+      <div className="flex items-center gap-1 bg-card border border-border/50 rounded-lg px-2 py-1.5">
         <Timer className="w-3 h-3 text-muted-foreground" />
-        <span className="font-arcade text-[10px]">{mins}:{secs}</span>
+        <span className="font-arcade text-[9px]">{mins}:{secs}</span>
       </div>
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
-        <span className="text-yellow-400 text-sm">🪙</span>
-        <span className="font-arcade text-[10px] text-yellow-400">{coins}</span>
+      <div className="flex items-center gap-1 bg-card border border-border/50 rounded-lg px-2 py-1.5">
+        <span className="text-sm">🪙</span>
+        <span className="font-arcade text-[9px] text-yellow-400">{coins}</span>
         {sessionCoins > 0 && (
           <motion.span
             key={sessionCoins}
