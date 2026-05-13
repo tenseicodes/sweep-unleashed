@@ -74,13 +74,14 @@ export default function AbilityShop({ profile, onPurchase }) {
         open={jceOpen}
         onClose={() => setJceOpen(false)}
         onSuccess={() => { onPurchase('jce', 'jce', 0); setJceOpen(false); }}
+        price="5.00"
       />
       <JCEPurchase
         open={jjOpen}
         onClose={() => setJjOpen(false)}
         onSuccess={() => { onPurchase('jj', 'jj', 0); setJjOpen(false); }}
         title="Jane Juliet"
-        price="5.00"
+        price="2.00"
         description="A phantom strike. Removes half of all mines and their surrounding blocks."
       />
     </div>
