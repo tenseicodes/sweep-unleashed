@@ -19,7 +19,7 @@ import { Home, RefreshCw, X } from 'lucide-react';
 
 const COIN_SINGLE   = 5;
 const COIN_CHUNK    = 10;
-const COIN_WIN_BONUS = 100;
+const COIN_WIN_BONUS = 1000;
 const CHARGE_SINGLE = 1;
 const CHARGE_CHUNK  = 3;
 const CHUNK_THRESHOLD = 3;
@@ -131,7 +131,7 @@ export default function Game() {
   }, [addCoins, fieldSize, profile, updateProfile, incrementQuestStat, awardCoins]);
 
   // ── Cell click ──
-  const handleCellClick = useCallback((cell) => {
+  const handleCellClick = useCallback(async (cell) => {
     if (gameState === 'won' || gameState === 'lost') return;
     if (cell.isFlagged) return;
     if (gameState === 'idle') setGameState('playing');
@@ -172,8 +172,10 @@ export default function Game() {
       const newCells = cells.map(c => c.isMine ? { ...c, isRevealed: true } : c);
       setCells(newCells);
       setGameState('lost');
+      const lossCoins = coinsEarnedRef.current;
+      if (lossCoins > 0) await addCoins(lossCoins);
       updateProfile({ total_games: (profile?.total_games || 0) + 1 });
-      setGameOverModal({ won: false, coins: coinsEarnedRef.current });
+      setGameOverModal({ won: false, coins: lossCoins });
       return;
     }
 
