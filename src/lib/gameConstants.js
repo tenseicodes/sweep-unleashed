@@ -56,8 +56,8 @@ export const ABILITIES = {
   jce: {
     id: 'jce',
     name: 'Judgement Cut End',
-    description: 'Destroys 90% of mines in a cinematic barrage',
-    charges: 12,
+    description: 'Destroys ~65% of mines in a cinematic barrage',
+    charges: 8,
     icon: '⚔️',
     color: 'text-white',
     bgColor: 'bg-white/10',
@@ -111,11 +111,11 @@ export const SKINS = {
 };
 
 export const QUESTS = [
-  { id: 'win3',     label: 'Win 3 games',            target: 3,  reward: 150, stat: 'wins_today'         },
-  { id: 'scan5',    label: 'Use Scan 5 times',        target: 5,  reward: 100, stat: 'scan_today'         },
-  { id: 'large1',   label: 'Play on Large field',     target: 1,  reward: 200, stat: 'large_today'        },
-  { id: 'win1med',  label: 'Win on Medium or larger', target: 1,  reward: 120, stat: 'win_med_today'      },
-  { id: 'flag10',   label: 'Place 10 flags',          target: 10, reward: 80,  stat: 'flags_today'        },
+  { id: 'win3',     label: 'Win 3 games',            target: 3,  reward: 1200, stat: 'wins_today'         },
+  { id: 'scan5',    label: 'Use Scan 5 times',        target: 5,  reward: 800,  stat: 'scan_today'         },
+  { id: 'large1',   label: 'Play on Large field',     target: 1,  reward: 1500, stat: 'large_today'        },
+  { id: 'win1med',  label: 'Win on Medium or larger', target: 1,  reward: 1000, stat: 'win_med_today'      },
+  { id: 'flag10',   label: 'Place 10 flags',          target: 10, reward: 600,  stat: 'flags_today'        },
 ];
 
 export const DAILY_REWARDS = [100, 150, 200, 250, 300, 400, 500];

@@ -124,7 +124,7 @@ export function detonateArea(cells, centerRow, centerCol, rows, cols) {
 export function judgementCutEnd(cells, rows, cols) {
   const newCells = cells.map(c => ({ ...c }));
   const mines = newCells.filter(c => c.isMine);
-  const toRemove = Math.floor(mines.length * 0.9);
+  const toRemove = Math.floor(mines.length * 0.65);
   const shuffled = [...mines].sort(() => Math.random() - 0.5).slice(0, toRemove);
   for (const mine of shuffled) {
     newCells[mine.id].isMine = false;
