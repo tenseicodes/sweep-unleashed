@@ -68,9 +68,9 @@ export const SFX = {
   lose() {
     const notes = [400, 300, 200, 150];
     notes.forEach((f, i) => {
-      setTimeout(() => playNoise({ freq: f, duration: 0.25, gain: 0.4, q: 0.5 }), i * 100);
+      setTimeout(() => playNoise({ freq: f, duration: 0.25, gain: 0.15, q: 0.5 }), i * 100);
     });
-    setTimeout(() => playTone({ freq: 150, freqEnd: 80, type: 'sawtooth', duration: 0.5, gain: 0.3, decay: 0.45 }), 0);
+    setTimeout(() => playTone({ freq: 150, freqEnd: 80, type: 'sawtooth', duration: 0.5, gain: 0.1, decay: 0.45 }), 0);
   },
   scan() {
     playTone({ freq: 1200, freqEnd: 800, type: 'sine', duration: 0.2, gain: 0.2, decay: 0.18 });
