@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Trophy, Skull, RefreshCw, ShoppingBag } from 'lucide-react';
+import { Trophy, Skull, RefreshCw, ShoppingBag, Home } from 'lucide-react';
 
-export default function GameOverModal({ won, time, coinsEarned, onRestart, onShop }) {
+export default function GameOverModal({ won, time, coinsEarned, onRestart, onShop, onMainMenu }) {
   const mins = String(Math.floor(time / 60)).padStart(2, '0');
   const secs = String(time % 60).padStart(2, '0');
 
@@ -10,7 +9,7 @@ export default function GameOverModal({ won, time, coinsEarned, onRestart, onSho
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm"
     >
       <motion.div
         initial={{ scale: 0.85, y: 20, opacity: 0 }}
@@ -24,35 +23,52 @@ export default function GameOverModal({ won, time, coinsEarned, onRestart, onSho
               animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <Trophy className="w-16 h-16 text-yellow-400" />
+              <Trophy className="w-14 h-14 text-yellow-400" />
             </motion.div>
-            <h2 className="font-arcade text-lg text-yellow-400 tracking-wider">VICTORY!</h2>
-            <p className="text-muted-foreground text-sm text-center">
-              Field cleared in <span className="text-foreground font-bold">{mins}:{secs}</span>
+            <h2 className="font-arcade text-base text-yellow-400 tracking-wider">VICTORY!</h2>
+            <p className="font-arcade text-[9px] text-muted-foreground text-center">
+              CLEARED IN {mins}:{secs}
             </p>
           </>
         ) : (
           <>
             <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.4 }}>
-              <Skull className="w-16 h-16 text-red-400" />
+              <Skull className="w-14 h-14 text-red-400" />
             </motion.div>
-            <h2 className="font-arcade text-lg text-red-400 tracking-wider">GAME OVER</h2>
-            <p className="text-muted-foreground text-sm">You hit a mine.</p>
+            <h2 className="font-arcade text-base text-red-400 tracking-wider">GAME OVER</h2>
+            <p className="font-arcade text-[9px] text-muted-foreground">YOU HIT A MINE</p>
           </>
         )}
 
         <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-lg px-4 py-2">
           <span className="text-xl">🪙</span>
-          <span className="text-yellow-400 font-bold">+{coinsEarned} coins</span>
+          <span className="font-arcade text-[10px] text-yellow-400">+{coinsEarned} COINS</span>
         </div>
 
-        <div className="flex gap-3 w-full">
-          <Button onClick={onRestart} className="flex-1 gap-2">
-            <RefreshCw className="w-4 h-4" /> Play Again
-          </Button>
-          <Button variant="outline" onClick={onShop} className="flex-1 gap-2">
-            <ShoppingBag className="w-4 h-4" /> Shop
-          </Button>
+        <div className="flex flex-col gap-2 w-full">
+          <motion.button
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            onClick={onRestart}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-arcade text-[9px] tracking-wider"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> PLAY AGAIN
+          </motion.button>
+          <div className="flex gap-2">
+            <motion.button
+              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+              onClick={onMainMenu}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-secondary border border-border font-arcade text-[8px] text-muted-foreground hover:text-foreground tracking-wider"
+            >
+              <Home className="w-3 h-3" /> MENU
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+              onClick={onShop}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-secondary border border-border font-arcade text-[8px] text-muted-foreground hover:text-foreground tracking-wider"
+            >
+              <ShoppingBag className="w-3 h-3" /> SHOP
+            </motion.button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

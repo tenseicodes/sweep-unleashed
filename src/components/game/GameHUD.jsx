@@ -7,23 +7,24 @@ export default function GameHUD({ flagsLeft, time, charges, coins, sessionCoins 
   const secs = String(time % 60).padStart(2, '0');
 
   return (
-    <div className="flex flex-wrap items-center gap-3 text-sm">
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-1.5">
-        <Flag className="w-3.5 h-3.5 text-yellow-400" />
-        <span className="font-mono font-bold text-yellow-400">{flagsLeft}</span>
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
+        <Flag className="w-3 h-3 text-yellow-400" />
+        <span className="font-arcade text-[10px] text-yellow-400">{flagsLeft}</span>
       </div>
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-1.5">
-        <Timer className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="font-mono font-bold">{mins}:{secs}</span>
+      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
+        <Timer className="w-3 h-3 text-muted-foreground" />
+        <span className="font-arcade text-[10px]">{mins}:{secs}</span>
       </div>
-      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-1.5">
-        <span className="text-yellow-400 text-base">🪙</span>
-        <span className="font-mono font-bold text-yellow-400">{coins}</span>
+      <div className="flex items-center gap-1.5 bg-card border border-border/50 rounded-lg px-3 py-2">
+        <span className="text-yellow-400 text-sm">🪙</span>
+        <span className="font-arcade text-[10px] text-yellow-400">{coins}</span>
         {sessionCoins > 0 && (
           <motion.span
-            initial={{ opacity: 0, y: -5 }}
+            key={sessionCoins}
+            initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-green-400"
+            className="font-arcade text-[8px] text-green-400"
           >+{sessionCoins}</motion.span>
         )}
       </div>

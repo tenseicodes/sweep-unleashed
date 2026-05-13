@@ -46,8 +46,8 @@ export default function Leaderboard() {
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-3xl font-black font-mono uppercase bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-wider">
-            Leaderboard
+          <h1 className="font-arcade text-base bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-wider">
+            LEADERBOARD
           </h1>
         </div>
 
@@ -57,7 +57,7 @@ export default function Leaderboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-bold font-mono transition-all duration-150
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-arcade text-[8px] transition-all duration-150
                 ${activeTab === tab.id
                   ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
                   : 'text-muted-foreground hover:text-foreground'}`}
@@ -113,9 +113,9 @@ export default function Leaderboard() {
                 <div className="flex-1 min-w-0">
                   <p className={`font-bold text-sm truncate font-mono ${isSelf ? 'text-primary' : 'text-foreground'}`}>
                     {entry.created_by?.split('@')[0] || 'Player'}
-                    {isSelf && <span className="ml-1.5 text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">YOU</span>}
+                    {isSelf && <span className="ml-1.5 font-arcade text-[7px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">YOU</span>}
                   </p>
-                  <p className="text-[11px] text-muted-foreground font-mono">
+                  <p className="font-arcade text-[8px] text-muted-foreground">
                     {entry.total_games || 0} games played
                   </p>
                 </div>
