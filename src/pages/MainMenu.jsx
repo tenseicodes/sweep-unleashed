@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
-import { Trophy, ShoppingBag, Scroll, User, Swords, ChevronRight, Play, LayoutGrid, MapPin, Zap, Shield, Bomb, Globe, ScanSearch, Flame } from 'lucide-react';
+import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame } from 'lucide-react';
+import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon } from '@/components/game/AbilityIcons';
 
 // ── Sub-screens ──
 import ShopModal from '@/components/shop/ShopModal';
@@ -237,7 +238,7 @@ export default function MainMenu() {
                       `}
                     >
                       <div className="flex items-center gap-2 w-full">
-                        <span className="text-xl">{ab.icon}</span>
+                        {(() => { const ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon }; const I = ICON_MAP[id]; return I ? <I className={`w-5 h-5 ${isSelected ? ab.color : 'text-white/50'}`} /> : null; })()}
                         <span className={`font-arcade text-[9px] ${isSelected ? ab.color : 'text-white/70'}`}>{ab.name.toUpperCase()}</span>
                         {isSelected && <span className="ml-auto text-[8px] font-arcade text-primary">✓</span>}
                       </div>
@@ -326,9 +327,11 @@ export default function MainMenu() {
                   {allOwned.map(id => {
                     const ab = ABILITIES[id];
                     if (!ab) return null;
+                    const ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon };
+                    const I = ICON_MAP[id];
                     return (
-                      <span key={id} className={`text-xs px-2 py-1 rounded-lg border ${ab.bgColor} ${ab.borderColor} ${ab.color} font-mono`}>
-                        {ab.icon} {ab.name}
+                      <span key={id} className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border ${ab.bgColor} ${ab.borderColor} ${ab.color} font-mono`}>
+                        {I && <I className="w-3.5 h-3.5" />} {ab.name}
                       </span>
                     );
                   })}

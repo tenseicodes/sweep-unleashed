@@ -17,6 +17,7 @@ import CoinPopup from '@/components/game/CoinPopup';
 import ShopModal from '@/components/shop/ShopModal';
 import { Button } from '@/components/ui/button';
 import { Home, RefreshCw, X } from 'lucide-react';
+import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon } from '@/components/game/AbilityIcons';
 
 const COIN_SINGLE    = 5;
 const COIN_CHUNK     = 10;
@@ -55,7 +56,6 @@ export default function Game() {
   // Ability state
   const [activeAbility, setActiveAbility] = useState(null); // targeting mode
   const [shieldActive, setShieldActive]   = useState(false);
-  const [shieldUsed, setShieldUsed]       = useState(false);
   const [highlightedIdx, setHighlightedIdx] = useState(null);
   const [jceActive, setJceActive]         = useState(false);
   const [pendingJceCells, setPendingJceCells] = useState(null);
@@ -78,7 +78,6 @@ export default function Game() {
     setSessionCoins(0);
     setActiveAbility(null);
     setShieldActive(false);
-    setShieldUsed(false);
     setHighlightedIdx(null);
     setFlagsPlaced(0);
     setTime(0);
@@ -98,16 +97,16 @@ export default function Game() {
     return () => clearInterval(timerRef.current);
   }, [gameState]);
 
-  // ── Shield auto-charge ──
+  // ── Shield auto-charge (reusable — recharges every time) ──
   useEffect(() => {
-    if (lockedAbility === 'shield' && !shieldUsed && !shieldActive
+    if (lockedAbility === 'shield' && !shieldActive
       && charges >= ABILITIES.shield.charges) {
       setCharges(c => c - ABILITIES.shield.charges);
       setShieldActive(true);
       SFX.shield?.();
       toast('🛡️ Shield activated!');
     }
-  }, [charges, shieldUsed, shieldActive, lockedAbility]);
+  }, [charges, shieldActive, lockedAbility]);
 
   // ── Award coins ──
   const awardCoins = useCallback((amount) => {
@@ -188,7 +187,6 @@ export default function Game() {
       if (shieldActive) {
         SFX.shieldBlock?.();
         setShieldActive(false);
-        setShieldUsed(true);
         toast('🛡️ Shield saved you!');
         return;
       }
@@ -295,6 +293,9 @@ export default function Game() {
   const handleRestart = () => { setGameOverModal(null); initBoard(); };
   const handleMainMenu = () => navigate('/');
 
+  const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon };
+  const AbilityIcon = ab ? (ABILITY_ICON_MAP[ab.id] || null) : null;
+
   const flagsLeft = cfg.mines - flagsPlaced;
   const ab = ABILITIES[lockedAbility];
   const canUseAbility = ab && charges >= ab.charges;
@@ -377,7 +378,7 @@ export default function Game() {
                 ${isShieldOn ? 'animate-shield-pulse' : ''}`}
               layout
             >
-              <span className="text-lg shrink-0">{ab.icon}</span>
+              {AbilityIcon && <AbilityIcon className={`w-5 h-5 shrink-0 ${ab.color}`} />}
               <div className="flex-1 min-w-0">
                 <p className={`font-arcade text-[8px] ${ab.color} tracking-wider truncate`}>{ab.name.toUpperCase()}</p>
                 <p className="text-[9px] text-muted-foreground line-clamp-1">{ab.description}</p>
@@ -404,7 +405,7 @@ export default function Game() {
                 )}
                 {lockedAbility === 'shield' && (
                   <span className={`font-arcade text-[8px] ${shieldActive ? 'text-cyan-400' : 'text-muted-foreground'}`}>
-                    {shieldActive ? '✓ ACTIVE' : shieldUsed ? 'USED' : 'CHARGING...'}
+                    {shieldActive ? '✓ ACTIVE' : 'CHARGING...'}
                   </span>
                 )}
               </div>
