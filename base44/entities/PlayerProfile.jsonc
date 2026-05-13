@@ -52,6 +52,10 @@
       "type": "boolean",
       "default": false
     },
+    "jj_owned": {
+      "type": "boolean",
+      "default": false
+    },
     "scan_uses": {
       "type": "number",
       "default": 0

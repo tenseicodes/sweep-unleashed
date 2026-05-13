@@ -4,6 +4,13 @@ export const FIELD_SIZES = {
   large:  { rows: 16, cols: 30, mines: 99, label: 'Large'  },
 };
 
+// Charge cost multipliers per field size
+export const CHARGE_SCALE = {
+  small:  0.7,
+  medium: 1.0,
+  large:  1.4,
+};
+
 export const ABILITIES = {
   scan: {
     id: 'scan',
@@ -63,6 +70,18 @@ export const ABILITIES = {
     bgColor: 'bg-white/10',
     borderColor: 'border-white/30',
     shopPrice: 2,
+    shopCurrency: 'usd',
+  },
+  jj: {
+    id: 'jj',
+    name: 'Jane Juliet',
+    description: 'Removes half of the field\'s mines and blocks',
+    charges: 8,
+    iconType: 'jj',
+    color: 'text-cyan-300',
+    bgColor: 'bg-cyan-500/10',
+    borderColor: 'border-cyan-400/40',
+    shopPrice: 5,
     shopCurrency: 'usd',
   },
 };

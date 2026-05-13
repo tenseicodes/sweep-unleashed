@@ -4,7 +4,7 @@ import { X, CreditCard, Shield, Sword } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function JCEPurchase({ open, onClose, onSuccess }) {
+export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgement Cut End', price = '2.00', description = 'A legendary ability. Destroys 90% of all mines in a cinematic barrage.' }) {
   const [step, setStep] = useState('confirm'); // confirm | payment | processing | done
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '' });
 
@@ -36,16 +36,16 @@ export default function JCEPurchase({ open, onClose, onSuccess }) {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2">
               <Sword className="w-5 h-5 text-white" />
-              <h3 className="font-black text-white">Judgement Cut End</h3>
+              <h3 className="font-black text-white">{title}</h3>
             </div>
             <button onClick={onClose} className="text-white/50 hover:text-white"><X className="w-4 h-4" /></button>
           </div>
 
           {step === 'confirm' && (
             <div className="space-y-4">
-              <p className="text-white/70 text-sm">A legendary ability. Destroys 90% of all mines in a cinematic barrage.</p>
+              <p className="text-white/70 text-sm">{description}</p>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                <span className="text-3xl font-black text-white">$2.00</span>
+                <span className="text-3xl font-black text-white">${price}</span>
                 <p className="text-white/40 text-xs mt-1">One-time purchase · Demo mode</p>
               </div>
               <Button className="w-full bg-white text-black hover:bg-white/90 font-bold" onClick={() => setStep('payment')}>
@@ -80,7 +80,7 @@ export default function JCEPurchase({ open, onClose, onSuccess }) {
                 />
               </div>
               <Button className="w-full bg-white text-black hover:bg-white/90 font-bold" onClick={handlePay}>
-                Pay $2.00
+                Pay ${price}
               </Button>
             </div>
           )}

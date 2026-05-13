@@ -128,6 +128,24 @@ export function detonateArea(cells, centerRow, centerCol, rows, cols) {
   return { cells: newCells, detonated };
 }
 
+export function janeJuliet(cells, rows, cols) {
+  const newCells = cells.map(c => ({ ...c }));
+  const mines = newCells.filter(c => c.isMine);
+  const toRemove = Math.floor(mines.length * 0.5);
+  const shuffled = [...mines].sort(() => Math.random() - 0.5).slice(0, toRemove);
+  for (const mine of shuffled) {
+    newCells[mine.id].isMine = false;
+    newCells[mine.id].isRevealed = true;
+  }
+  // Recompute neighbor counts
+  for (const cell of newCells) {
+    if (cell.isMine) continue;
+    cell.neighborCount = getNeighborIndices(cell.row, cell.col, rows, cols)
+      .filter(ni => newCells[ni].isMine).length;
+  }
+  return newCells;
+}
+
 export function judgementCutEnd(cells, rows, cols) {
   const newCells = cells.map(c => ({ ...c }));
   const mines = newCells.filter(c => c.isMine);

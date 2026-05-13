@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
 import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame } from 'lucide-react';
-import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon } from '@/components/game/AbilityIcons';
+import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
+
+const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon, jj: JaneBeamIcon };
 
 // ── Sub-screens ──
 import ShopModal from '@/components/shop/ShopModal';
@@ -50,6 +52,9 @@ export default function MainMenu() {
     } else if (type === 'jce') {
       await updateProfile({ jce_owned: true });
       toast('⚔️ Judgement Cut End unlocked!');
+    } else if (type === 'jj') {
+      await updateProfile({ jj_owned: true });
+      toast('✨ Jane Juliet unlocked!');
     } else if (type === 'skin') {
       if (price > 0 && !spendCoins(price)) { toast.error('Not enough coins!'); return; }
       await updateProfile({ owned_skins: [...(profile?.owned_skins || []), id], active_skin: id });
@@ -84,7 +89,8 @@ export default function MainMenu() {
 
   const allOwned = [
     ...(profile?.owned_abilities || ['scan']),
-    ...(profile?.jce_owned ? ['jce'] : [])
+    ...(profile?.jce_owned ? ['jce'] : []),
+    ...(profile?.jj_owned ? ['jj'] : []),
   ].filter((id, i, a) => a.indexOf(id) === i);
 
   return (
@@ -238,7 +244,7 @@ export default function MainMenu() {
                       `}
                     >
                       <div className="flex items-center gap-2 w-full">
-                        {(() => { const ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon }; const I = ICON_MAP[id]; return I ? <I className={`w-5 h-5 ${isSelected ? ab.color : 'text-white/50'}`} /> : null; })()}
+                        {(() => { const I = ABILITY_ICON_MAP[id]; return I ? <I className={`w-5 h-5 ${isSelected ? ab.color : 'text-white/50'}`} /> : null; })()}
                         <span className={`font-arcade text-[9px] ${isSelected ? ab.color : 'text-white/70'}`}>{ab.name.toUpperCase()}</span>
                         {isSelected && <span className="ml-auto text-[8px] font-arcade text-primary">✓</span>}
                       </div>
@@ -327,8 +333,7 @@ export default function MainMenu() {
                   {allOwned.map(id => {
                     const ab = ABILITIES[id];
                     if (!ab) return null;
-                    const ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon };
-                    const I = ICON_MAP[id];
+                    const I = ABILITY_ICON_MAP[id];
                     return (
                       <span key={id} className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border ${ab.bgColor} ${ab.borderColor} ${ab.color} font-mono`}>
                         {I && <I className="w-3.5 h-3.5" />} {ab.name}

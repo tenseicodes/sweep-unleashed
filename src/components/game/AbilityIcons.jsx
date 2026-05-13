@@ -66,6 +66,26 @@ export function RevealZoneIcon({ className = "w-5 h-5" }) {
 }
 
 // Yamato — white blade, black sheath, gold tsuba, diagonal orientation
+export function JaneBeamIcon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+      {/* Central glow dot */}
+      <circle cx="12" cy="12" r="2" fill="#22d3ee" opacity="0.9" />
+      {/* Beam lines radiating out */}
+      <line x1="12" y1="12" x2="22" y2="12" stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" />
+      <line x1="12" y1="12" x2="2"  y2="12" stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" />
+      <line x1="12" y1="12" x2="19.07" y2="4.93"  stroke="#67e8f9" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      <line x1="12" y1="12" x2="4.93"  y2="19.07" stroke="#67e8f9" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      <line x1="12" y1="12" x2="4.93"  y2="4.93"  stroke="#67e8f9" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      <line x1="12" y1="12" x2="19.07" y2="19.07" stroke="#67e8f9" strokeWidth="1" strokeLinecap="round" opacity="0.7" />
+      <line x1="12" y1="12" x2="12" y2="2"  stroke="#a5f3fc" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+      <line x1="12" y1="12" x2="12" y2="22" stroke="#a5f3fc" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+      {/* Outer halo ring */}
+      <circle cx="12" cy="12" r="8" stroke="#22d3ee" strokeWidth="0.5" strokeDasharray="2 3" opacity="0.5" />
+    </svg>
+  );
+}
+
 export function YamatoIcon({ className = "w-5 h-5" }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

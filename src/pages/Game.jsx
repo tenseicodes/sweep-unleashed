@@ -4,8 +4,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 import { base44 } from '@/api/base44Client';
-import { createBoard, placeMines, floodReveal, checkWin, getSafeCells, revealArea, detonateArea, judgementCutEnd } from '@/lib/gameLogic';
-import { FIELD_SIZES, ABILITIES } from '@/lib/gameConstants';
+import { createBoard, placeMines, floodReveal, checkWin, getSafeCells, revealArea, detonateArea, judgementCutEnd, janeJuliet } from '@/lib/gameLogic';
+import { FIELD_SIZES, ABILITIES, CHARGE_SCALE } from '@/lib/gameConstants';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { SFX } from '@/lib/sounds';
 
@@ -13,13 +13,14 @@ import MineBoard from '@/components/game/MineBoard';
 import GameHUD from '@/components/game/GameHUD';
 import GameOverModal from '@/components/game/GameOverModal';
 import JCEOverlay from '@/components/game/JCEOverlay';
+import JJOverlay from '@/components/game/JJOverlay';
 import CoinPopup from '@/components/game/CoinPopup';
 import ShopModal from '@/components/shop/ShopModal';
 import { Button } from '@/components/ui/button';
 import { Home, RefreshCw, X } from 'lucide-react';
-import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon } from '@/components/game/AbilityIcons';
+import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
 
-const COIN_SINGLE    = 5;
+const COIN_SINGLE    = 3;
 const COIN_CHUNK     = 10;
 const COIN_WIN_BONUS = 1000;
 const CHARGE_SINGLE  = 1;
@@ -43,6 +44,8 @@ export default function Game() {
 
   const cfg  = FIELD_SIZES[fieldSize] || FIELD_SIZES.small;
   const skin = profile?.active_skin || 'default';
+  const ab = ABILITIES[lockedAbility];
+  const scaledCharges = ab ? Math.round(ab.charges * (CHARGE_SCALE[fieldSize] || 1)) : 0;
 
   // Board
   const [cells, setCells]       = useState([]);
@@ -59,6 +62,8 @@ export default function Game() {
   const [highlightedIdx, setHighlightedIdx] = useState(null);
   const [jceActive, setJceActive]         = useState(false);
   const [pendingJceCells, setPendingJceCells] = useState(null);
+  const [jjActive, setJjActive]           = useState(false);
+  const [pendingJjCells, setPendingJjCells]   = useState(null);
 
   // UI
   const [shopOpen, setShopOpen]       = useState(false);
@@ -100,8 +105,8 @@ export default function Game() {
   // ── Shield auto-charge (reusable — recharges every time) ──
   useEffect(() => {
     if (lockedAbility === 'shield' && !shieldActive
-      && charges >= ABILITIES.shield.charges) {
-      setCharges(c => c - ABILITIES.shield.charges);
+      && charges >= scaledCharges) {
+      setCharges(c => c - scaledCharges);
       setShieldActive(true);
       SFX.shield?.();
       toast('🛡️ Shield activated!');
@@ -162,7 +167,7 @@ export default function Game() {
       SFX.detonate?.();
       const { cells: newCells } = detonateArea(currentCells, cell.row, cell.col, cfg.rows, cfg.cols);
       setCells(newCells);
-      setCharges(c => c - ABILITIES.detonate.charges);
+      setCharges(c => c - scaledCharges);
       setActiveAbility(null);
       toast('💥 Detonated!');
       if (checkWin(newCells)) handleWin(newCells);
@@ -172,7 +177,7 @@ export default function Game() {
       SFX.revealZone?.();
       const newCells = revealArea(currentCells, cell.row, cell.col, 2, cfg.rows, cfg.cols);
       setCells(newCells);
-      setCharges(c => c - ABILITIES.reveal_zone.charges);
+      setCharges(c => c - scaledCharges);
       setActiveAbility(null);
       toast('🌐 Zone revealed!');
       if (checkWin(newCells)) handleWin(newCells);
@@ -231,8 +236,8 @@ export default function Game() {
   // ── Ability use (the locked one) ──
   const handleUseAbility = useCallback(async () => {
     const id = lockedAbility;
-    const ab = ABILITIES[id];
-    if (!ab || charges < ab.charges) return;
+    const abi = ABILITIES[id];
+    if (!abi || charges < scaledCharges) return;
     if (activeAbility === id) { setActiveAbility(null); return; }
 
     if (id === 'scan') {
@@ -240,7 +245,7 @@ export default function Game() {
       const safe = getSafeCells(cells);
       if (safe.length === 0) return;
       const pick = safe[Math.floor(Math.random() * safe.length)];
-      setCharges(c => c - ab.charges);
+      setCharges(c => c - scaledCharges);
       setHighlightedIdx(pick.id);
       await updateProfile({ scan_uses: (profile?.scan_uses || 0) + 1 });
       await incrementQuestStat('scan_today');
@@ -251,17 +256,25 @@ export default function Game() {
 
     if (id === 'jce') {
       SFX.jce?.();
-      setCharges(c => c - ab.charges);
+      setCharges(c => c - scaledCharges);
       const newCells = judgementCutEnd(cells, cfg.rows, cfg.cols);
       setPendingJceCells(newCells);
       setJceActive(true);
       return;
     }
 
+    if (id === 'jj') {
+      setCharges(c => c - scaledCharges);
+      const newCells = janeJuliet(cells, cfg.rows, cfg.cols);
+      setPendingJjCells(newCells);
+      setJjActive(true);
+      return;
+    }
+
     // detonate / reveal_zone: targeting mode
     setActiveAbility(id);
-    toast(`🎯 Click a cell to use ${ab.name}`);
-  }, [lockedAbility, charges, cells, cfg, activeAbility, profile, updateProfile, incrementQuestStat]);
+    toast(`🎯 Click a cell to use ${abi.name}`);
+  }, [lockedAbility, charges, scaledCharges, cells, cfg, activeAbility, profile, updateProfile, incrementQuestStat]);
 
   const handleJCEComplete = useCallback(() => {
     setJceActive(false);
@@ -273,6 +286,16 @@ export default function Game() {
     }
   }, [pendingJceCells, handleWin]);
 
+  const handleJJComplete = useCallback(() => {
+    setJjActive(false);
+    if (pendingJjCells) {
+      setCells(pendingJjCells);
+      setPendingJjCells(null);
+      toast('✨ Jane Juliet! Half the mines cleared.');
+      if (checkWin(pendingJjCells)) handleWin(pendingJjCells);
+    }
+  }, [pendingJjCells, handleWin]);
+
   // ── Shop purchase ──
   const handlePurchase = useCallback(async (type, id, price) => {
     if (type === 'ability') {
@@ -282,6 +305,8 @@ export default function Game() {
       toast(`✅ ${ABILITIES[id]?.name} unlocked!`);
     } else if (type === 'jce') {
       await updateProfile({ jce_owned: true });
+    } else if (type === 'jj') {
+      await updateProfile({ jj_owned: true });
     } else if (type === 'skin') {
       if (price > 0 && !spendCoins(price)) { toast.error('Not enough coins!'); return; }
       await updateProfile({ owned_skins: [...(profile?.owned_skins || []), id], active_skin: id });
@@ -293,12 +318,11 @@ export default function Game() {
   const handleRestart = () => { setGameOverModal(null); initBoard(); };
   const handleMainMenu = () => navigate('/');
 
-  const ab = ABILITIES[lockedAbility];
-  const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon };
+  const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon, jj: JaneBeamIcon };
   const AbilityIcon = ab ? (ABILITY_ICON_MAP[ab.id] || null) : null;
 
   const flagsLeft = cfg.mines - flagsPlaced;
-  const canUseAbility = ab && charges >= ab.charges;
+  const canUseAbility = ab && charges >= scaledCharges;
   const isTargeting   = activeAbility === lockedAbility;
   const isShieldOn    = lockedAbility === 'shield' && shieldActive;
 
@@ -319,6 +343,7 @@ export default function Game() {
   return (
     <div className={`min-h-screen ${skinBgMap[skin] || 'bg-background'} transition-colors duration-500`}>
       <JCEOverlay active={jceActive} onComplete={handleJCEComplete} />
+      <JJOverlay active={jjActive} onComplete={handleJJComplete} />
       <CoinPopup amount={COIN_SINGLE} trigger={coinTrigger} />
       <ShopModal open={shopOpen} onClose={() => setShopOpen(false)} profile={profile} onPurchase={handlePurchase} />
 
@@ -384,7 +409,7 @@ export default function Game() {
                 <p className="text-[9px] text-muted-foreground line-clamp-1">{ab.description}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="font-arcade text-[8px] text-muted-foreground">{charges}/{ab.charges} ⚡</span>
+                <span className="font-arcade text-[8px] text-muted-foreground">{charges}/{scaledCharges} ⚡</span>
                 {lockedAbility !== 'shield' && (
                   <motion.button
                     whileHover={canUseAbility ? { scale: 1.06 } : {}}
