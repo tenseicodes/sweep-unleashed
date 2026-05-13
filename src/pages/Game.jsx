@@ -417,9 +417,10 @@ export default function Game() {
                     whileHover={canUseAbility ? { scale: 1.06 } : {}}
                     whileTap={canUseAbility ? { scale: 0.94 } : {}}
                     onClick={handleUseAbility}
+                    onTouchEnd={(e) => { e.preventDefault(); handleUseAbility(); }}
                     disabled={!canUseAbility}
                     className={`
-                      px-3 py-1 rounded-lg font-arcade text-[8px] border transition-all tracking-wider
+                      px-3 py-2 rounded-lg font-arcade text-[8px] border transition-all tracking-wider min-h-[44px]
                       ${isTargeting
                         ? 'bg-primary text-primary-foreground border-primary animate-pulse-glow'
                         : canUseAbility
@@ -450,7 +451,11 @@ export default function Game() {
                 >
                   <span>🎯</span>
                   <span>CLICK A CELL TO TARGET</span>
-                  <button onClick={() => setActiveAbility(null)} className="ml-auto text-muted-foreground hover:text-foreground">
+                  <button
+                    onClick={() => setActiveAbility(null)}
+                    onTouchEnd={(e) => { e.preventDefault(); setActiveAbility(null); }}
+                    className="ml-auto text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </motion.div>
