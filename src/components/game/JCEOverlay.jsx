@@ -1,89 +1,136 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Pre-generate slash data so it's stable between renders
+function generateSlashes(count) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    top: Math.random() * 110 - 5,          // -5% to 105%
+    angle: -55 + Math.random() * 30,        // steep diagonal
+    width: 55 + Math.random() * 70,         // 55-125% of screen width
+    thickness: 1 + Math.random() * 3,       // 1-4px
+    delay: i * 0.045 + Math.random() * 0.02,
+    brightness: 0.7 + Math.random() * 0.3,
+  }));
+}
+
+const SLASH_COUNT = 32;
+const slashData = generateSlashes(SLASH_COUNT);
+
 export default function JCEOverlay({ active, onComplete }) {
-  const [phase, setPhase] = useState('idle'); // idle | text | slash | done
+  const [phase, setPhase] = useState('idle'); // idle | text | slash | flash | done
+  const timers = useRef([]);
 
   useEffect(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+
     if (!active) { setPhase('idle'); return; }
+
     setPhase('text');
-    const t1 = setTimeout(() => setPhase('slash'), 1400);
-    const t2 = setTimeout(() => { setPhase('done'); onComplete?.(); }, 3200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    timers.current.push(setTimeout(() => setPhase('slash'), 1200));
+    timers.current.push(setTimeout(() => setPhase('flash'), 1200 + SLASH_COUNT * 45 + 100));
+    timers.current.push(setTimeout(() => {
+      setPhase('done');
+      onComplete?.();
+    }, 1200 + SLASH_COUNT * 45 + 500));
+
+    return () => timers.current.forEach(clearTimeout);
   }, [active]);
 
-  if (phase === 'idle') return null;
-
-  const slashCount = 18;
+  if (phase === 'idle' || phase === 'done') return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden"
-    >
-      {/* Text phase */}
+    <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
+      {/* Dark overlay */}
+      <motion.div
+        className="absolute inset-0 bg-black"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === 'flash' ? 0 : 0.92 }}
+        transition={{ duration: 0.15 }}
+      />
+
+      {/* White flash */}
+      <AnimatePresence>
+        {phase === 'flash' && (
+          <motion.div
+            className="absolute inset-0 bg-white"
+            initial={{ opacity: 0.9 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Title text */}
       <AnimatePresence>
         {phase === 'text' && (
           <motion.div
-            key="jce-text"
-            initial={{ opacity: 0, scale: 0.7, y: 10 }}
-            animate={{ opacity: 1, scale: 1.05, y: 0, letterSpacing: '0.25em' }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
+            key="title"
+            className="absolute inset-0 flex flex-col items-center justify-center select-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
           >
-            <p className="text-white/40 text-sm tracking-[0.4em] font-mono mb-2">— ABILITY ACTIVATED —</p>
-            <h1
-              className="text-4xl sm:text-6xl font-black text-white font-mono uppercase"
-              style={{ textShadow: '0 0 30px #fff, 0 0 60px #fff8, 0 0 100px #fff4' }}
+            <motion.p
+              className="text-white/50 text-xs tracking-[0.6em] font-mono mb-3 uppercase"
+              initial={{ y: -8, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              ─ ability activated ─
+            </motion.p>
+            <motion.h1
+              className="font-mono font-black uppercase text-white text-5xl sm:text-7xl leading-none"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              style={{ textShadow: '0 0 40px #fff, 0 0 80px #fff6' }}
             >
               Judgement Cut
-            </h1>
-            <p
-              className="text-3xl sm:text-5xl font-black text-white/80 font-mono mt-1"
-              style={{ textShadow: '0 0 20px #fff, 0 0 40px #fff6' }}
+            </motion.h1>
+            <motion.p
+              className="font-mono font-black uppercase text-white/70 text-3xl sm:text-5xl mt-1"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.35, type: 'spring', stiffness: 200 }}
+              style={{ textShadow: '0 0 20px #fff8' }}
             >
               End
-            </p>
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Slash phase */}
-      {phase === 'slash' && (
+      {/* Slashes — appear sequentially, each one a sharp diagonal line */}
+      {(phase === 'slash' || phase === 'flash') && (
         <div className="absolute inset-0">
-          {Array.from({ length: slashCount }).map((_, i) => {
-            const delay = i * 0.07;
-            const top = Math.random() * 100;
-            const angle = -40 + Math.random() * 20;
-            const width = 60 + Math.random() * 80;
-            return (
-              <motion.div
-                key={i}
-                initial={{ x: '-150%', opacity: 0, rotate: angle }}
-                animate={{ x: '250%', opacity: [0, 1, 1, 0] }}
-                transition={{ duration: 0.35, delay, ease: 'easeOut' }}
-                className="absolute h-[2px] bg-white"
-                style={{
-                  top: `${top}%`,
-                  width: `${width}%`,
-                  left: 0,
-                  boxShadow: '0 0 8px 2px rgba(255,255,255,0.9)',
-                  rotate: `${angle}deg`,
-                }}
-              />
-            );
-          })}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.3, 0] }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 bg-white"
-          />
+          {slashData.map((slash) => (
+            <motion.div
+              key={slash.id}
+              className="absolute left-0 origin-left"
+              style={{
+                top: `${slash.top}%`,
+                width: `${slash.width}vw`,
+                height: `${slash.thickness}px`,
+                background: `rgba(255,255,255,${slash.brightness})`,
+                boxShadow: `0 0 ${slash.thickness * 4}px ${slash.thickness * 2}px rgba(255,255,255,${slash.brightness * 0.6})`,
+                transform: `rotate(${slash.angle}deg)`,
+                transformOrigin: 'left center',
+              }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }}
+              transition={{
+                delay: slash.delay,
+                duration: 0.28,
+                times: [0, 0.25, 0.7, 1],
+                ease: 'easeOut',
+              }}
+            />
+          ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

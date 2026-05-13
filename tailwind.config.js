@@ -7,6 +7,7 @@ module.exports = {
       fontFamily: {
         sans: ['Space Grotesk', 'sans-serif'],
         mono: ['Space Mono', 'monospace'],
+        arcade: ['"Press Start 2P"', 'monospace'],
       },
       borderRadius: {
         lg: 'var(--radius)',

@@ -26,7 +26,7 @@ export default function GameOverModal({ won, time, coinsEarned, onRestart, onSho
             >
               <Trophy className="w-16 h-16 text-yellow-400" />
             </motion.div>
-            <h2 className="text-2xl font-black text-foreground">Victory!</h2>
+            <h2 className="font-arcade text-lg text-yellow-400 tracking-wider">VICTORY!</h2>
             <p className="text-muted-foreground text-sm text-center">
               Field cleared in <span className="text-foreground font-bold">{mins}:{secs}</span>
             </p>
@@ -36,7 +36,7 @@ export default function GameOverModal({ won, time, coinsEarned, onRestart, onSho
             <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.4 }}>
               <Skull className="w-16 h-16 text-red-400" />
             </motion.div>
-            <h2 className="text-2xl font-black text-foreground">Game Over</h2>
+            <h2 className="font-arcade text-lg text-red-400 tracking-wider">GAME OVER</h2>
             <p className="text-muted-foreground text-sm">You hit a mine.</p>
           </>
         )}
