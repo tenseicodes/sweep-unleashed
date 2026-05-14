@@ -94,15 +94,15 @@ export default function MainMenu() {
   ].filter((id, i, a) => a.indexOf(id) === i);
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden" style={{ background: 'transparent' }}>
       {/* Animated BG grid */}
       <div className="absolute inset-0 opacity-10"
         style={{
-          backgroundImage: 'linear-gradient(hsl(262 80% 65% / 0.4) 1px, transparent 1px), linear-gradient(90deg, hsl(262 80% 65% / 0.4) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(var(--skin-accent) 1px, transparent 1px), linear-gradient(90deg, var(--skin-accent) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 pointer-events-none" />
 
       <DailyRewardModal
         open={dailyRewardAvailable}
@@ -130,7 +130,7 @@ export default function MainMenu() {
                 ◆ INDIE ARCADE ◆
               </motion.p>
               <h1 className="font-arcade text-3xl sm:text-4xl text-center leading-tight"
-                style={{ color: '#fff', textShadow: '0 0 30px hsl(262 80% 65%), 0 0 60px hsl(262 80% 65% / 0.5)' }}
+                style={{ color: 'var(--skin-text)', textShadow: '0 0 30px var(--skin-accent), 0 0 60px color-mix(in srgb, var(--skin-accent) 50%, transparent)' }}
               >
                 SWEEP<br />UNLEASHED
               </h1>
@@ -282,7 +282,7 @@ export default function MainMenu() {
           >
             <BackButton onClick={() => setScreen('main')} />
             <h2 className="font-arcade text-base text-primary text-center tracking-wider">DAILY QUESTS</h2>
-            <div className="bg-card border border-border/50 rounded-2xl p-4">
+            <div className="rounded-2xl p-4" style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }}>
               <QuestPanel profile={profile} onClaim={handleClaimQuest} />
             </div>
           </motion.div>
@@ -297,7 +297,7 @@ export default function MainMenu() {
           >
             <BackButton onClick={() => setScreen('main')} />
             <h2 className="font-arcade text-base text-primary text-center tracking-wider">PROFILE</h2>
-            <div className="bg-card border border-border/50 rounded-2xl p-5 flex flex-col gap-4">
+            <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }}>
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
                   <User className="w-6 h-6 text-primary" />
@@ -349,7 +349,7 @@ export default function MainMenu() {
             </div>
 
             {/* Game History */}
-            <div className="bg-card border border-border/50 rounded-2xl p-4">
+            <div className="rounded-2xl p-4" style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }}>
               <p className="font-arcade text-[9px] text-muted-foreground mb-3 tracking-widest">GAME HISTORY</p>
               <GameHistoryPanel />
             </div>

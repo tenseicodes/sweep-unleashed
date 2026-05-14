@@ -54,7 +54,7 @@ export default function Leaderboard() {
   }, [activeTab]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center py-10 px-4">
+    <div className="min-h-screen flex flex-col items-center py-10 px-4" style={{ background: 'transparent' }}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -64,7 +64,8 @@ export default function Leaderboard() {
         <div className="flex items-center gap-3 mb-6">
           <Link
             to="/"
-            className="p-2 rounded-lg bg-card border border-border/50 hover:border-primary/50 transition-colors"
+            className="p-2 rounded-lg transition-colors"
+            style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }}
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -74,7 +75,7 @@ export default function Leaderboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 bg-card border border-border/50 p-1 rounded-xl">
+        <div className="flex gap-2 p-1 rounded-xl" style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -94,7 +95,7 @@ export default function Leaderboard() {
       <div className="w-full max-w-xl flex flex-col gap-2">
         {loading ? (
           Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-14 bg-card border border-border/30 rounded-xl animate-pulse" />
+            <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background: 'var(--skin-hud-bg)', border: '1px solid var(--skin-border)' }} />
           ))
         ) : entries.length === 0 ? (
           <div className="text-center text-muted-foreground py-16 font-mono">No data yet. Be the first!</div>
@@ -131,12 +132,11 @@ export default function Leaderboard() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.04 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all
-                  ${isSelf
-                    ? 'bg-primary/10 border-primary/40 shadow-lg shadow-primary/10'
-                    : rank <= 3
-                      ? 'bg-card border-border/60'
-                      : 'bg-card/60 border-border/30'}`}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
+                style={{
+                  background: isSelf ? 'var(--skin-accent-soft)' : 'var(--skin-hud-bg)',
+                  borderColor: isSelf ? 'var(--skin-accent)' : 'var(--skin-border)',
+                }}
               >
                 {/* Rank */}
                 <div className="w-8 text-center text-lg font-black font-mono shrink-0">
