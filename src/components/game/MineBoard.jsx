@@ -5,9 +5,8 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
   const isMobile = window.innerWidth < 600;
   const scrollRef = useRef(null);
   const [scrollRatio, setScrollRatio] = useState(0);
-  const [showSlider, setShowSlider] = useState(false);
 
-  // Calculate cell size to fit screen width on mobile, both dimensions on desktop
+  // Calculate cell size to fit properly on both mobile and desktop
   const availW = window.innerWidth * 0.96;
   const reservedH = isMobile ? 300 : 260;
   const availH = window.innerHeight - reservedH;
@@ -15,11 +14,13 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
   const maxByWidth  = Math.floor(availW / cols);
   const maxByHeight = Math.floor(availH / rows);
 
-  const cellSize = isMobile
-    ? Math.max(18, Math.min(maxByWidth, 52))
-    : Math.max(22, Math.min(maxByWidth, maxByHeight, 52));
+  // On desktop, fit both width and height; on mobile, prioritize width (may scroll)
+  const cellSize = Math.max(18, Math.min(
+    isMobile ? maxByWidth : Math.min(maxByWidth, maxByHeight),
+    52
+  ));
 
-  const boardWidth = cols * cellSize + (cols - 1) * 2 + 16; // gap + padding
+  const boardWidth = cols * cellSize + (cols - 1) * 2 + 16;
   const needsScroll = isMobile && boardWidth > availW;
 
   // Track scroll position for slider
@@ -31,8 +32,6 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
       setScrollRatio(max > 0 ? el.scrollLeft / max : 0);
     };
     el.addEventListener('scroll', handleScroll, { passive: true });
-    // Show slider if board overflows
-    setShowSlider(true);
     return () => el.removeEventListener('scroll', handleScroll);
   }, [needsScroll]);
 
