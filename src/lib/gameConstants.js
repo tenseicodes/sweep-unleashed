@@ -63,7 +63,7 @@ export const ABILITIES = {
   jce: {
     id: 'jce',
     name: 'Judgement Cut End',
-    description: 'Destroys ~65% of mines in a cinematic barrage',
+    description: 'Destroys ~65% of mines in a cinematic barrage of slashes',
     charges: 8,
     iconType: 'jce',
     color: 'text-white',
@@ -75,7 +75,7 @@ export const ABILITIES = {
   jj: {
     id: 'jj',
     name: 'Jane Juliet',
-    description: 'Removes half of the field\'s mines and blocks',
+    description: 'Removes half of the field\'s mines and reveals their cells',
     charges: 8,
     iconType: 'jj',
     color: 'text-cyan-300',

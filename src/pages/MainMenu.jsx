@@ -45,7 +45,8 @@ export default function MainMenu() {
 
   const handlePurchase = async (type, id, price) => {
     if (type === 'ability') {
-      if (!spendCoins(price)) { toast.error('Not enough coins!'); return; }
+      if ((profile?.coins || 0) < price) { toast.error('Not enough coins!'); return; }
+      await spendCoins(price);
       const newAbilities = [...(profile?.owned_abilities || []), id];
       await updateProfile({ owned_abilities: newAbilities });
       toast(`✅ ${ABILITIES[id]?.name} unlocked!`);
@@ -56,7 +57,8 @@ export default function MainMenu() {
       await updateProfile({ jj_owned: true });
       toast('✨ Jane Juliet unlocked!');
     } else if (type === 'skin') {
-      if (price > 0 && !spendCoins(price)) { toast.error('Not enough coins!'); return; }
+      if (price > 0 && (profile?.coins || 0) < price) { toast.error('Not enough coins!'); return; }
+      if (price > 0) await spendCoins(price);
       await updateProfile({ owned_skins: [...(profile?.owned_skins || []), id], active_skin: id });
       toast(`🎨 ${id} skin equipped!`);
     } else if (type === 'skin_equip') {

@@ -166,7 +166,8 @@ export default function Game() {
     if (gameState === 'won' || gameState === 'lost') return;
     if (cell.isFlagged) return;
     let currentCells = cells;
-    if (gameState === 'idle') {
+    const isFirstClick = gameState === 'idle';
+    if (isFirstClick) {
       // Place mines on first click, guaranteeing a safe zone around the clicked cell
       currentCells = placeMines(cells, cfg.rows, cfg.cols, cfg.mines, cell.id);
       setCells(currentCells);
@@ -227,9 +228,8 @@ export default function Game() {
 
     // Safe flood reveal
     const revealed = floodReveal(currentCells, cell.id, cfg.rows, cfg.cols);
-    const newlyRevealed = revealed.filter((nc, i) => nc.isRevealed && !cells[i].isRevealed);
+    const newlyRevealed = revealed.filter((nc, i) => nc.isRevealed && !currentCells[i].isRevealed);
     const count   = newlyRevealed.length;
-    const isFirstClick = gameState === 'idle';
     const isChunk = !isFirstClick && count >= CHUNK_THRESHOLD;
 
     if (isChunk) SFX.revealChunk?.(); else SFX.reveal?.();
@@ -316,7 +316,8 @@ export default function Game() {
   // ── Shop purchase ──
   const handlePurchase = useCallback(async (type, id, price) => {
     if (type === 'ability') {
-      if (!spendCoins(price)) { toast.error('Not enough coins!'); return; }
+      if ((profile?.coins || 0) < price) { toast.error('Not enough coins!'); return; }
+      await spendCoins(price);
       const newAbilities = [...(profile?.owned_abilities || []), id];
       await updateProfile({ owned_abilities: newAbilities });
       toast(`✅ ${ABILITIES[id]?.name} unlocked!`);
@@ -325,7 +326,8 @@ export default function Game() {
     } else if (type === 'jj') {
       await updateProfile({ jj_owned: true });
     } else if (type === 'skin') {
-      if (price > 0 && !spendCoins(price)) { toast.error('Not enough coins!'); return; }
+      if (price > 0 && (profile?.coins || 0) < price) { toast.error('Not enough coins!'); return; }
+      if (price > 0) await spendCoins(price);
       await updateProfile({ owned_skins: [...(profile?.owned_skins || []), id], active_skin: id });
     } else if (type === 'skin_equip') {
       await updateProfile({ active_skin: id });

@@ -4,7 +4,7 @@ import { X, CreditCard, Shield, Sword } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgement Cut End', price = '2.00', description = 'A legendary ability. Destroys 90% of all mines in a cinematic barrage.' }) {
+export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgement Cut End', price = '5.00', description = 'A legendary ability. Destroys ~65% of mines in a cinematic barrage of slashes.' }) {
   const [step, setStep] = useState('confirm'); // confirm | payment | processing | done
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '' });
 
@@ -46,7 +46,7 @@ export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgeme
               <p className="text-white/70 text-sm">{description}</p>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
                 <span className="text-3xl font-black text-white">${price}</span>
-                <p className="text-white/40 text-xs mt-1">One-time purchase · Demo mode</p>
+                <p className="text-white/40 text-xs mt-1">One-time purchase · Permanent unlock</p>
               </div>
               <Button className="w-full bg-white text-black hover:bg-white/90 font-bold" onClick={() => setStep('payment')}>
                 <CreditCard className="w-4 h-4 mr-2" /> Continue to Payment
@@ -57,7 +57,7 @@ export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgeme
           {step === 'payment' && (
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-xs text-white/40 mb-4">
-                <Shield className="w-3 h-3" /> Demo payment — no real charge
+              <Shield className="w-3 h-3" /> Secure payment
               </div>
               <Input
                 placeholder="Card number (e.g. 4242 4242 4242 4242)"
