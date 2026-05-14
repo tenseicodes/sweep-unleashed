@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Coins, ArrowLeft, Star } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const tabs = [
-  { id: 'wins', label: 'Top Wins', icon: '🏆', field: 'total_wins' },
-  { id: 'coins', label: 'Most Coins', icon: '🪙', field: 'coins' },
+  { id: 'wins',   label: 'Top Wins',   icon: '🏆' },
+  { id: 'coins',  label: 'Most Coins', icon: '🪙' },
+  { id: 'speed',  label: 'Fastest',    icon: '⚡' },
 ];
 
 const medals = ['🥇', '🥈', '🥉'];
+
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${String(sec).padStart(2, '0')}`;
+}
 
 export default function Leaderboard() {
   const [activeTab, setActiveTab] = useState('wins');
@@ -23,13 +30,28 @@ export default function Leaderboard() {
 
   useEffect(() => {
     setLoading(true);
-    const field = tabs.find(t => t.id === activeTab)?.field || 'total_wins';
-    base44.entities.PlayerProfile.list(`-${field}`, 20)
-      .then(setEntries)
-      .finally(() => setLoading(false));
+    if (activeTab === 'speed') {
+      // Fastest wins from GameHistory — filter wins with time > 0, sort by time asc
+      base44.entities.GameHistory.filter({ result: 'win' }, 'time_seconds', 20)
+        .then(data => {
+          // deduplicate: keep best time per player
+          const best = {};
+          data.forEach(r => {
+            if (!r.time_seconds || r.time_seconds <= 0) return;
+            const key = r.created_by;
+            if (!best[key] || r.time_seconds < best[key].time_seconds) best[key] = r;
+          });
+          const sorted = Object.values(best).sort((a, b) => a.time_seconds - b.time_seconds).slice(0, 20);
+          setEntries(sorted);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      const field = activeTab === 'coins' ? 'coins' : 'total_wins';
+      base44.entities.PlayerProfile.list(`-${field}`, 20)
+        .then(setEntries)
+        .finally(() => setLoading(false));
+    }
   }, [activeTab]);
-
-  const field = tabs.find(t => t.id === activeTab)?.field;
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center py-10 px-4">
@@ -57,7 +79,7 @@ export default function Leaderboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg font-arcade text-[8px] transition-all duration-150
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg font-arcade text-[8px] transition-all duration-150
                 ${activeTab === tab.id
                   ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
                   : 'text-muted-foreground hover:text-foreground'}`}
@@ -75,15 +97,37 @@ export default function Leaderboard() {
             <div key={i} className="h-14 bg-card border border-border/30 rounded-xl animate-pulse" />
           ))
         ) : entries.length === 0 ? (
-          <div className="text-center text-muted-foreground py-16 font-mono">No players yet. Be the first!</div>
+          <div className="text-center text-muted-foreground py-16 font-mono">No data yet. Be the first!</div>
         ) : (
           entries.map((entry, i) => {
             const isSelf = me && entry.created_by === me.email;
-            const value = entry[field] || 0;
             const rank = i + 1;
+
+            let scoreEl;
+            if (activeTab === 'speed') {
+              scoreEl = (
+                <div className="text-right shrink-0">
+                  <p className="font-black text-lg font-mono text-accent">{fmt(entry.time_seconds)}</p>
+                  <p className="text-[10px] text-muted-foreground font-mono capitalize">{entry.field_size} field</p>
+                </div>
+              );
+            } else {
+              const value = activeTab === 'coins' ? (entry.coins || 0) : (entry.total_wins || 0);
+              scoreEl = (
+                <div className="text-right shrink-0">
+                  <p className={`font-black text-lg font-mono ${activeTab === 'coins' ? 'text-yellow-400' : 'text-primary'}`}>
+                    {value.toLocaleString()}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground font-mono">
+                    {activeTab === 'coins' ? 'coins' : 'wins'}
+                  </p>
+                </div>
+              );
+            }
+
             return (
               <motion.div
-                key={entry.id}
+                key={entry.id ?? i}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.04 }}
@@ -116,19 +160,13 @@ export default function Leaderboard() {
                     {isSelf && <span className="ml-1.5 font-arcade text-[7px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">YOU</span>}
                   </p>
                   <p className="font-arcade text-[8px] text-muted-foreground">
-                    {entry.total_games || 0} games played
+                    {activeTab === 'speed'
+                      ? `${entry.ability_used || '—'} ability`
+                      : `${entry.total_games || 0} games played`}
                   </p>
                 </div>
 
-                {/* Score */}
-                <div className="text-right shrink-0">
-                  <p className={`font-black text-lg font-mono ${activeTab === 'coins' ? 'text-yellow-400' : 'text-primary'}`}>
-                    {value.toLocaleString()}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground font-mono">
-                    {activeTab === 'coins' ? 'coins' : 'wins'}
-                  </p>
-                </div>
+                {scoreEl}
               </motion.div>
             );
           })

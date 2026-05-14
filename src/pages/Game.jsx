@@ -206,7 +206,10 @@ export default function Game() {
         result: 'loss', field_size: fieldSize, ability_used: lockedAbility,
         coins_earned: lossCoins, time_seconds: time, win_streak: 0, multiplier: 1,
       });
-      setGameOverModal({ won: false, coins: lossCoins, streak: 0, multiplier: 1 });
+      // Delay loss modal so players can see where mines were
+      setTimeout(() => {
+        setGameOverModal({ won: false, coins: lossCoins, streak: 0, multiplier: 1 });
+      }, 1500);
       return;
     }
 
