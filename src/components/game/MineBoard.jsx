@@ -6,17 +6,18 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
   const [cellSize, setCellSize] = useState(32);
   const [isMobile, setIsMobile] = useState(false);
 
-  // On mobile, transpose large boards (30×16 → 16×30) so they scroll vertically
+  // On mobile only, transpose large boards (30×16 → 16×30) so they scroll vertically
   const isLarge = rows === 16 && cols === 30;
-  const displayCols = isMobile && isLarge ? rows : cols; // 16 on mobile large
-  const displayRows = isMobile && isLarge ? cols : rows; // 30 on mobile large
+  const transpose = isMobile && isLarge;
+  const displayCols = transpose ? rows : cols;
+  const displayRows = transpose ? cols : rows;
 
   useEffect(() => {
     const calculate = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       const containerW = containerRef.current?.clientWidth || window.innerWidth;
-      const effectiveCols = mobile && isLarge ? rows : cols;
+      const effectiveCols = (mobile && isLarge) ? rows : cols;
 
       if (mobile) {
         // Fit width: account for gap (2px per gap) and padding (16px total)
@@ -55,9 +56,9 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
 
   return (
     <div ref={containerRef} className="w-full flex flex-col items-center">
-      <div className="w-full flex justify-center overflow-hidden">
+      <div className="w-full flex justify-center">
         <div
-          className={`inline-grid gap-[2px] p-2 rounded-xl ${isMobile ? 'overflow-y-auto max-h-[calc(100vh-240px)]' : ''}`}
+          className={`inline-grid gap-[2px] p-2 rounded-xl${transpose ? ' overflow-y-auto max-h-[calc(100vh-240px)]' : ''}`}
           style={{
             gridTemplateColumns: `repeat(${displayCols}, ${cellSize}px)`,
             touchAction: 'pan-y',
