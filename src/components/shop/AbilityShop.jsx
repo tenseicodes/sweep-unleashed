@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ABILITIES } from '@/lib/gameConstants';
-import JCEPurchase from './JCEPurchase';
+import PremiumAbilityCard from './PremiumAbilityCard';
 import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
 
 const ABILITY_ICONS = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon, jj: JaneBeamIcon };
 
 export default function AbilityShop({ profile, onPurchase }) {
-  const [jceOpen, setJceOpen] = useState(false);
-  const [jjOpen, setJjOpen] = useState(false);
   const shopItems = Object.values(ABILITIES).filter(a => a.shopPrice !== null);
 
   return (
@@ -44,13 +42,7 @@ export default function AbilityShop({ profile, onPurchase }) {
                   ✓ OWNED
                 </span>
               ) : ab.shopCurrency === 'usd' ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                  onClick={() => ab.id === 'jj' ? setJjOpen(true) : setJceOpen(true)}
-                  className="font-arcade text-[8px] px-3 py-2 rounded-lg border border-white/30 bg-white/10 text-white hover:bg-white/20 transition-all min-h-[40px]"
-                >
-                  ${ab.shopPrice}.00
-                </motion.button>
+                <PremiumAbilityCard ability={ab} owned={owned} onPurchaseSuccess={() => onPurchase(ab.id === 'jce' ? 'jce' : 'jj', ab.id, 0)} />
               ) : (
                 <motion.button
                   whileHover={canAfford ? { scale: 1.05 } : {}}
@@ -68,23 +60,7 @@ export default function AbilityShop({ profile, onPurchase }) {
             </div>
           </motion.div>
         );
-      })}
-
-      <JCEPurchase
-        open={jceOpen}
-        onClose={() => setJceOpen(false)}
-        onSuccess={() => { onPurchase('jce', 'jce', 0); setJceOpen(false); }}
-        price="5.00"
-        description="A legendary ability. Destroys ~65% of all mines in a cinematic barrage of slashes."
-      />
-      <JCEPurchase
-        open={jjOpen}
-        onClose={() => setJjOpen(false)}
-        onSuccess={() => { onPurchase('jj', 'jj', 0); setJjOpen(false); }}
-        title="Jane Juliet"
-        price="2.00"
-        description="A phantom strike. Removes half of all mines and their surrounding blocks."
-      />
-    </div>
-  );
-}
+        })}
+        </div>
+        );
+        }
