@@ -222,7 +222,7 @@ export default function Game() {
       // Delay loss modal so players can see where mines were
       setTimeout(() => {
         setGameOverModal({ won: false, coins: lossCoins, streak: 0, multiplier: 1 });
-      }, 1500);
+      }, 600);
       return;
     }
 
