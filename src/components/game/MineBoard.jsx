@@ -2,32 +2,42 @@ import { memo, useRef, useState, useEffect } from 'react';
 import MineCell from './MineCell';
 
 const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCellRightClick, highlightedIdx, targetingAbility, onTargetClick, gameOver }) {
+  const containerRef = useRef(null);
   const scrollRef = useRef(null);
   const [scrollRatio, setScrollRatio] = useState(0);
+  const [needsScroll, setNeedsScroll] = useState(false);
+  const [cellSize, setCellSize] = useState(32);
 
-  const isMobile = window.innerWidth < 768;
+  useEffect(() => {
+    const calculate = () => {
+      const isMobile = window.innerWidth < 768;
+      const containerW = containerRef.current?.clientWidth || window.innerWidth;
+      const reservedH = isMobile ? 320 : 280;
+      const availH = window.innerHeight - reservedH;
 
-  // Available space
-  const padding = 32; // px on each side
-  const availW = window.innerWidth - padding * 2;
-  const reservedH = isMobile ? 320 : 280; // top bar + HUD + ability bar + footer
-  const availH = window.innerHeight - reservedH;
+      const cellByWidth  = Math.floor(containerW / cols);
+      const cellByHeight = Math.floor(availH / rows);
 
-  // Cell size: on desktop, fit both dimensions; on mobile, fit width (can scroll horizontally)
-  const cellByWidth  = Math.floor(availW / cols);
-  const cellByHeight = Math.floor(availH / rows);
+      let size;
+      if (isMobile) {
+        size = Math.max(18, Math.min(cellByWidth, 52));
+      } else {
+        size = Math.max(22, Math.min(cellByWidth, cellByHeight, 52));
+      }
 
-  let cellSize;
-  if (isMobile) {
-    cellSize = Math.max(18, Math.min(cellByWidth, 52));
-  } else {
-    cellSize = Math.max(22, Math.min(cellByWidth, cellByHeight, 52));
-  }
+      setCellSize(size);
 
-  const boardPx = cols * cellSize + (cols - 1) * 2 + 16; // gap + padding
-  const needsScroll = isMobile && boardPx > availW;
+      // Check if board actually overflows the container
+      const boardPx = cols * size + (cols - 1) * 2 + 16;
+      setNeedsScroll(isMobile && boardPx > containerW);
+    };
 
-  // Track scroll position for the mobile slider
+    calculate();
+    window.addEventListener('resize', calculate);
+    return () => window.removeEventListener('resize', calculate);
+  }, [rows, cols]);
+
+  // Track scroll position for slider
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || !needsScroll) return;
@@ -49,8 +59,7 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-2">
-      {/* Board container — scrollable only on mobile when needed */}
+    <div ref={containerRef} className="w-full flex flex-col items-center gap-2">
       <div
         ref={scrollRef}
         className={needsScroll ? 'overflow-x-auto overflow-y-visible w-full' : 'w-full flex justify-center'}
@@ -80,7 +89,7 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
         </div>
       </div>
 
-      {/* Horizontal scroll slider — mobile only, only when board overflows */}
+      {/* Slider only when board actually overflows on mobile */}
       {needsScroll && (
         <div className="w-full px-4 flex items-center gap-2">
           <span className="text-[9px] font-arcade text-muted-foreground">◀</span>
