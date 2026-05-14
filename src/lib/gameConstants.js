@@ -33,7 +33,7 @@ export const ABILITIES = {
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/20',
     borderColor: 'border-blue-500/40',
-    shopPrice: 1200,
+    shopPrice: 6000,
     shopCurrency: 'coins',
   },
   detonate: {
@@ -45,7 +45,7 @@ export const ABILITIES = {
     color: 'text-orange-400',
     bgColor: 'bg-orange-500/20',
     borderColor: 'border-orange-500/40',
-    shopPrice: 3000,
+    shopPrice: 8000,
     shopCurrency: 'coins',
   },
   reveal_zone: {
@@ -57,7 +57,7 @@ export const ABILITIES = {
     color: 'text-green-400',
     bgColor: 'bg-green-500/20',
     borderColor: 'border-green-500/40',
-    shopPrice: 5000,
+    shopPrice: 10000,
     shopCurrency: 'coins',
   },
   jce: {
