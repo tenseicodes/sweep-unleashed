@@ -2,28 +2,32 @@ import { memo, useRef, useState, useEffect } from 'react';
 import MineCell from './MineCell';
 
 const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCellRightClick, highlightedIdx, targetingAbility, onTargetClick, gameOver }) {
-  const isMobile = window.innerWidth < 600;
   const scrollRef = useRef(null);
   const [scrollRatio, setScrollRatio] = useState(0);
 
-  // Calculate cell size to fit properly on both mobile and desktop
-  const availW = window.innerWidth * 0.96;
-  const reservedH = isMobile ? 300 : 260;
+  const isMobile = window.innerWidth < 768;
+
+  // Available space
+  const padding = 32; // px on each side
+  const availW = window.innerWidth - padding * 2;
+  const reservedH = isMobile ? 320 : 280; // top bar + HUD + ability bar + footer
   const availH = window.innerHeight - reservedH;
 
-  const maxByWidth  = Math.floor(availW / cols);
-  const maxByHeight = Math.floor(availH / rows);
+  // Cell size: on desktop, fit both dimensions; on mobile, fit width (can scroll horizontally)
+  const cellByWidth  = Math.floor(availW / cols);
+  const cellByHeight = Math.floor(availH / rows);
 
-  // On desktop, fit both width and height; on mobile, prioritize width (may scroll)
-  const cellSize = Math.max(18, Math.min(
-    isMobile ? maxByWidth : Math.min(maxByWidth, maxByHeight),
-    52
-  ));
+  let cellSize;
+  if (isMobile) {
+    cellSize = Math.max(18, Math.min(cellByWidth, 52));
+  } else {
+    cellSize = Math.max(22, Math.min(cellByWidth, cellByHeight, 52));
+  }
 
-  const boardWidth = cols * cellSize + (cols - 1) * 2 + 16;
-  const needsScroll = isMobile && boardWidth > availW;
+  const boardPx = cols * cellSize + (cols - 1) * 2 + 16; // gap + padding
+  const needsScroll = isMobile && boardPx > availW;
 
-  // Track scroll position for slider
+  // Track scroll position for the mobile slider
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || !needsScroll) return;
@@ -40,21 +44,20 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
     setScrollRatio(ratio);
     const el = scrollRef.current;
     if (el) {
-      const max = el.scrollWidth - el.clientWidth;
-      el.scrollLeft = ratio * max;
+      el.scrollLeft = ratio * (el.scrollWidth - el.clientWidth);
     }
   };
 
   return (
     <div className="w-full flex flex-col items-center gap-2">
-      {/* Scrollable board */}
+      {/* Board container — scrollable only on mobile when needed */}
       <div
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-visible w-full"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        className={needsScroll ? 'overflow-x-auto overflow-y-visible w-full' : 'w-full flex justify-center'}
+        style={needsScroll ? { WebkitOverflowScrolling: 'touch' } : {}}
       >
         <div
-          className="inline-grid gap-[2px] p-2 rounded-xl mx-auto"
+          className="inline-grid gap-[2px] p-2 rounded-xl"
           style={{
             gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
             touchAction: 'pan-y',
@@ -77,8 +80,8 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
         </div>
       </div>
 
-      {/* Horizontal scroll slider — only shown on mobile when board overflows */}
-      {isMobile && needsScroll && (
+      {/* Horizontal scroll slider — mobile only, only when board overflows */}
+      {needsScroll && (
         <div className="w-full px-4 flex items-center gap-2">
           <span className="text-[9px] font-arcade text-muted-foreground">◀</span>
           <input
@@ -88,7 +91,7 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
             step="0.001"
             value={scrollRatio}
             onChange={handleSliderChange}
-            className="flex-1 h-1 accent-primary"
+            className="flex-1 h-1"
             style={{ accentColor: 'var(--skin-accent)' }}
           />
           <span className="text-[9px] font-arcade text-muted-foreground">▶</span>
