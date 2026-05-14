@@ -8,7 +8,7 @@ Same minesweeper you know, but now you have abilities that charge up as you play
 a shop to spend your coins in, daily quests to complete and a leaderboard to climb. 
 You start with one ability (Scan) and unlock the rest in the shop. 
 Some abilities like Judgement Cut End have cinematic animations because why not, 
-it's BADASS.
+it's BADASS
 
 Sweep:Unleashed brings back that feeling of "just one more game" but now there's 
 actually a reason to keep going. Every run you're building towards something, 
@@ -21,3 +21,6 @@ Because of that, premium abilities like Jane Juliet and Judgement Cut End are fr
 to test. Just tap the button without filling in payment info and it works
 
 questions? hit me up: +996708394292
+
+p.s. i bought a $7 builder plan just to push this to github. 
+no regrets.
