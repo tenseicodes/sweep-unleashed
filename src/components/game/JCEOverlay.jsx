@@ -25,7 +25,7 @@ function makeBeams(n) {
       originX,
       originY,
       angle,
-      length: 80 + Math.random() * 80, // vw
+      length: 150 + Math.random() * 50, // Increased to cover full screen diagonal on mobile
       thickness: 1 + Math.random() * 3,
       delay: i * 0.06 + Math.random() * 0.1,
       color: Math.random() > 0.3 ? '#ffffff' : '#c8d8ff',
