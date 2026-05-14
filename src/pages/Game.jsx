@@ -461,7 +461,7 @@ export default function Game() {
         )}
 
         {/* ── Board ── */}
-        <div className="overflow-auto max-w-full pb-2">
+        <div className="w-full max-w-4xl pb-2">
           <MineBoard
             cells={cells} rows={cfg.rows} cols={cfg.cols}
             onCellClick={handleCellClick} onCellRightClick={handleRightClick}

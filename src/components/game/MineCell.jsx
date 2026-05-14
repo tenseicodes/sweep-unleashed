@@ -3,6 +3,8 @@ import { NUMBER_COLORS } from '@/lib/gameConstants';
 
 // Long-press threshold for mobile flagging
 const LONG_PRESS_MS = 400;
+// Movement threshold to distinguish scroll from tap (pixels)
+const MOVE_THRESHOLD = 6;
 
 export default function MineCell({
   cell,
@@ -16,29 +18,39 @@ export default function MineCell({
   const { isRevealed, isMine, isFlagged, neighborCount } = cell;
   const longPressTimer = useRef(null);
   const didLongPress = useRef(false);
+  const touchStartPos = useRef(null);
+  const didMove = useRef(false);
 
-  // ── Touch handlers for mobile flagging via long-press ──
   const handleTouchStart = (e) => {
     didLongPress.current = false;
+    didMove.current = false;
+    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     longPressTimer.current = setTimeout(() => {
-      didLongPress.current = true;
-      if (!isRevealed && !isTargeting) onRightClick(cell);
+      if (!didMove.current) {
+        didLongPress.current = true;
+        if (!isRevealed && !isTargeting) onRightClick(cell);
+      }
     }, LONG_PRESS_MS);
+  };
+
+  const handleTouchMove = (e) => {
+    if (touchStartPos.current) {
+      const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
+      const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
+      if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+        didMove.current = true;
+        clearTimeout(longPressTimer.current);
+      }
+    }
   };
 
   const handleTouchEnd = (e) => {
     clearTimeout(longPressTimer.current);
-    if (didLongPress.current) {
-      e.preventDefault();
-      return;
-    }
+    // If finger moved (scroll intent) or long press, don't trigger click
+    if (didMove.current || didLongPress.current) return;
     e.preventDefault();
     if (isTargeting) { onTargetClick(cell); return; }
     onClick(cell);
-  };
-
-  const handleTouchMove = () => {
-    clearTimeout(longPressTimer.current);
   };
 
   const handleClick = (e) => {
