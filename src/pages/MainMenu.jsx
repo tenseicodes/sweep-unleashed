@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { FIELD_SIZES, ABILITIES, CHARGE_SCALE } from '@/lib/gameConstants';
-import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame } from 'lucide-react';
+import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame, Pencil, Check, X } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
 
 const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon, jj: JaneBeamIcon };
@@ -30,6 +31,8 @@ export default function MainMenu() {
 
   const [screen, setScreen] = useState('main'); // main | play | quests | profile
   const [shopOpen, setShopOpen] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState('');
 
   // Play setup state
   const [selectedSize, setSelectedSize] = useState('small');
@@ -70,6 +73,14 @@ export default function MainMenu() {
   const handleClaimQuest = async (questId, reward) => {
     const ok = await claimQuest(questId, reward);
     if (ok) toast(`🎉 Quest complete! +${reward} coins`);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed) { toast.error('Name cannot be empty'); return; }
+    await base44.auth.updateMe({ full_name: trimmed });
+    setEditingName(false);
+    toast('✅ Name updated!');
   };
 
   const handlePlay = () => {
@@ -304,8 +315,28 @@ export default function MainMenu() {
                 <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
                   <User className="w-6 h-6 text-primary" />
                 </div>
-                <div>
-                  <p className="font-arcade text-[10px] text-foreground">PLAYER</p>
+                <div className="flex-1 min-w-0">
+                  {editingName ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        autoFocus
+                        value={nameInput}
+                        onChange={e => setNameInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') setEditingName(false); }}
+                        className="font-arcade text-[10px] bg-white/10 border border-primary/40 rounded-lg px-2 py-1 text-foreground outline-none focus:border-primary w-full"
+                        maxLength={20}
+                      />
+                      <button onClick={handleSaveName} className="text-green-400 hover:text-green-300 shrink-0"><Check className="w-4 h-4" /></button>
+                      <button onClick={() => setEditingName(false)} className="text-muted-foreground hover:text-foreground shrink-0"><X className="w-4 h-4" /></button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <p className="font-arcade text-[10px] text-foreground truncate">{profile?.full_name || 'PLAYER'}</p>
+                      <button onClick={() => { setNameInput(profile?.full_name || ''); setEditingName(true); }} className="text-muted-foreground hover:text-primary shrink-0">
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
                   <p className="font-arcade text-[8px] text-muted-foreground mt-1">
                     LOGIN STREAK: {profile?.login_streak || 0}D
                   </p>
