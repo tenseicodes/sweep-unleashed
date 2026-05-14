@@ -34,6 +34,9 @@ function streakMultiplier(streak) {
   return Math.min(1 + (streak - 1) * 0.5, 3);
 }
 
+// Field size coin multiplier
+const FIELD_COIN_MULT = { small: 1, medium: 1.25, large: 1.5 };
+
 export default function Game() {
   const navigate = useNavigate();
   const { profile, loading, updateProfile, addCoins, spendCoins, incrementQuestStat, claimQuest } = usePlayerProfile();
@@ -121,12 +124,14 @@ export default function Game() {
   }, [charges, shieldActive, lockedAbility]);
 
   // ── Award coins ──
+  const fieldMult = FIELD_COIN_MULT[fieldSize] || 1;
   const awardCoins = useCallback((amount) => {
-    setSessionCoins(sc => sc + amount);
-    coinsEarnedRef.current += amount;
+    const scaled = Math.round(amount * fieldMult);
+    setSessionCoins(sc => sc + scaled);
+    coinsEarnedRef.current += scaled;
     coinTriggerRef.current += 1;
     setCoinTrigger(coinTriggerRef.current);
-  }, []);
+  }, [fieldMult]);
 
   // ── Win handler ──
   const handleWin = useCallback(async (finalCells) => {
