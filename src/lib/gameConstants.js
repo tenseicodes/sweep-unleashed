@@ -69,7 +69,7 @@ export const ABILITIES = {
     color: 'text-white',
     bgColor: 'bg-white/10',
     borderColor: 'border-white/30',
-    shopPrice: 2,
+    shopPrice: 5,
     shopCurrency: 'usd',
   },
   jj: {
