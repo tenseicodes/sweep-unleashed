@@ -2,6 +2,10 @@
   "name": "PlayerProfile",
   "type": "object",
   "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "Player's chosen display name"
+    },
     "coins": {
       "type": "number",
       "default": 0
@@ -83,18 +87,7 @@
     "create": {
       "created_by": "{{user.email}}"
     },
-    "read": {
-      "$or": [
-        {
-          "created_by": "{{user.email}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
+    "read": {},
     "update": {
       "$or": [
         {

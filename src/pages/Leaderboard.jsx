@@ -150,13 +150,13 @@ export default function Leaderboard() {
                     : rank === 3 ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
                     : 'bg-secondary text-muted-foreground border border-border/50'}`}
                 >
-                  {(entry.created_by?.[0] || '?').toUpperCase()}
+                  {((entry.display_name || entry.created_by || '?')[0]).toUpperCase()}
                 </div>
 
                 {/* Name */}
                 <div className="flex-1 min-w-0">
                   <p className={`font-bold text-sm truncate font-mono ${isSelf ? 'text-primary' : 'text-foreground'}`}>
-                    {entry.created_by?.split('@')[0] || 'Player'}
+                    {entry.display_name || entry.created_by?.split('@')[0] || 'Player'}
                     {isSelf && <span className="ml-1.5 font-arcade text-[7px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">YOU</span>}
                   </p>
                   <p className="font-arcade text-[8px] text-muted-foreground">

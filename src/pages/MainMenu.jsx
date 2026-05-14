@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { FIELD_SIZES, ABILITIES, CHARGE_SCALE } from '@/lib/gameConstants';
 import { Trophy, ShoppingBag, Scroll, User, ChevronRight, Play, LayoutGrid, Zap, Flame, Pencil, Check, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 import { ScanIcon, ShieldIcon, DetonateIcon, RevealZoneIcon, YamatoIcon, JaneBeamIcon } from '@/components/game/AbilityIcons';
 
 const ABILITY_ICON_MAP = { scan: ScanIcon, shield: ShieldIcon, detonate: DetonateIcon, reveal_zone: RevealZoneIcon, jce: YamatoIcon, jj: JaneBeamIcon };
@@ -78,7 +77,7 @@ export default function MainMenu() {
   const handleSaveName = async () => {
     const trimmed = nameInput.trim();
     if (!trimmed) { toast.error('Name cannot be empty'); return; }
-    await base44.auth.updateMe({ full_name: trimmed });
+    await updateProfile({ display_name: trimmed });
     setEditingName(false);
     toast('✅ Name updated!');
   };
@@ -331,7 +330,7 @@ export default function MainMenu() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <p className="font-arcade text-[10px] text-foreground truncate">{profile?.full_name || 'PLAYER'}</p>
+                      <p className="font-arcade text-[10px] text-foreground truncate">{profile?.display_name || profile?.created_by?.split('@')[0] || 'PLAYER'}</p>
                       <button onClick={() => { setNameInput(profile?.full_name || ''); setEditingName(true); }} className="text-muted-foreground hover:text-primary shrink-0">
                         <Pencil className="w-3 h-3" />
                       </button>
