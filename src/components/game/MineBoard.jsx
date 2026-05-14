@@ -55,9 +55,9 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
 
   return (
     <div ref={containerRef} className="w-full flex flex-col items-center">
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center overflow-hidden">
         <div
-          className="inline-grid gap-[2px] p-2 rounded-xl"
+          className={`inline-grid gap-[2px] p-2 rounded-xl ${isMobile ? 'overflow-y-auto max-h-[calc(100vh-240px)]' : ''}`}
           style={{
             gridTemplateColumns: `repeat(${displayCols}, ${cellSize}px)`,
             touchAction: 'pan-y',
