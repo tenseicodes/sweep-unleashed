@@ -74,6 +74,10 @@ export function usePlayerProfile() {
 
   const updateProfile = useCallback(async (updates) => {
     if (!profile) return;
+    // Instantly broadcast skin change before awaiting the API
+    if (updates.active_skin) {
+      window.dispatchEvent(new CustomEvent('skin-change', { detail: updates.active_skin }));
+    }
     const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
     setProfile(updated);
     return updated;

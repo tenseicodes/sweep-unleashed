@@ -37,7 +37,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <div className={`skin-${skin}`} style={{ background: 'var(--skin-bg-gradient)', minHeight: '100vh' }}>
+    <div className={`skin-${skin}`} style={{ background: 'var(--skin-bg-gradient)', minHeight: '100vh', transition: 'none' }}>
     <Routes>
       <Route path="/" element={<MainMenu />} />
       <Route path="/game" element={<Game />} />

@@ -14,12 +14,11 @@ export function SkinProvider({ children }) {
       })
       .catch(() => {});
 
-    // Subscribe to live updates
-    const unsubscribe = base44.entities.PlayerProfile.subscribe((event) => {
-      if (event.data?.active_skin) setSkin(event.data.active_skin);
-    });
+    // Instant update from updateProfile dispatch
+    const handleInstant = (e) => setSkin(e.detail);
+    window.addEventListener('skin-change', handleInstant);
 
-    return () => unsubscribe();
+    return () => window.removeEventListener('skin-change', handleInstant);
   }, []);
 
   return (
