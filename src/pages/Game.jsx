@@ -71,6 +71,7 @@ export default function Game() {
   const [gameOverModal, setGameOverModal] = useState(null);
   const [flagsPlaced, setFlagsPlaced] = useState(0);
   const [time, setTime]               = useState(0);
+  const [isMobile, setIsMobile]       = useState(window.innerWidth < 768);
 
   const timerRef        = useRef(null);
   const coinTriggerRef  = useRef(0);
@@ -91,7 +92,12 @@ export default function Game() {
     clearInterval(timerRef.current);
   }, [cfg]);
 
-  useEffect(() => { initBoard(); }, []);
+  useEffect(() => {
+    initBoard();
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // ── Timer ──
   useEffect(() => {
@@ -471,7 +477,7 @@ export default function Game() {
         </div>
 
         <p className="font-arcade text-[8px] text-muted-foreground tracking-widest pb-4">
-          LEFT CLICK REVEAL · RIGHT CLICK FLAG
+          {isMobile ? 'TAP TO REVEAL · HOLD TO PLACE FLAG' : 'LEFT CLICK REVEAL · RIGHT CLICK FLAG'}
         </p>
       </div>
     </div>
