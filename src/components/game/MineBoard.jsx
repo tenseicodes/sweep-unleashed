@@ -11,10 +11,10 @@ const MineBoard = memo(function MineBoard({ cells, rows, cols, onCellClick, onCe
       const containerW = containerRef.current?.clientWidth || window.innerWidth;
 
       if (isMobile) {
-        // Always fit width — scale down to fill the screen horizontally
-        // Large boards become tall and scroll vertically (no horizontal scroll)
-        const size = Math.max(14, Math.floor(containerW / cols));
-        setCellSize(Math.min(size, 52));
+        // Fit width exactly: account for gap (2px per col) and padding (16px total)
+        const available = containerW - 16 - (cols - 1) * 2;
+        const size = Math.floor(available / cols);
+        setCellSize(Math.max(12, Math.min(size, 52)));
       } else {
         // Desktop: fit both width and height
         const reservedH = 280;
