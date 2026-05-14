@@ -2,6 +2,8 @@
 
 Minesweeper hasn't changed since 1989. So I built Sweep:Unleashed.
 
+GAME LINK - https://sweepunleashed.base44.app
+
 Same minesweeper you know, but now you have abilities that charge up as you play, 
 a shop to spend your coins in, daily quests to complete and a leaderboard to climb. 
 You start with one ability (Scan) and unlock the rest in the shop. 
