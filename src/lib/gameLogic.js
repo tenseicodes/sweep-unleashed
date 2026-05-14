@@ -153,6 +153,7 @@ export function judgementCutEnd(cells, rows, cols) {
   const shuffled = [...mines].sort(() => Math.random() - 0.5).slice(0, toRemove);
   for (const mine of shuffled) {
     newCells[mine.id].isMine = false;
+    newCells[mine.id].isRevealed = true;
   }
   // Recompute neighbor counts
   for (const cell of newCells) {
