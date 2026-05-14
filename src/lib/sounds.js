@@ -93,21 +93,21 @@ export const SFX = {
     });
   },
   jce() {
-    // Katana slash series — sharp metallic sweeps, each slightly offset
-    const slashTimes = [0, 90, 180, 270, 380, 500, 640];
+    // Intro delay matches the 800ms name-card phase in JCEOverlay
+    const INTRO = 800;
+    // Katana slash series — each slash timed to match beam delays (beam i has delay = i*0.06s)
+    const slashTimes = [0, 60, 120, 200, 300, 420, 560, 700, 860, 1040, 1250];
     slashTimes.forEach((t) => {
       setTimeout(() => {
-        // High metallic "zing" sweep
         playTone({ freq: 3200, freqEnd: 800, type: 'sawtooth', duration: 0.18, gain: 0.18, attack: 0.002, decay: 0.16 });
-        // Thin noise burst for the "cut" texture
         playNoise({ freq: 3000, duration: 0.12, gain: 0.14, q: 3 });
-      }, t);
+      }, INTRO + t);
     });
-    // Final heavy impact at the end
+    // Final heavy impact after all slashes
     setTimeout(() => {
       playNoise({ freq: 200, duration: 0.35, gain: 0.28, q: 0.4 });
       playTone({ freq: 220, freqEnd: 80, type: 'sawtooth', duration: 0.4, gain: 0.22, attack: 0.01, decay: 0.38 });
-    }, 780);
+    }, INTRO + 1400);
   },
   jj() {
     // Beam charge-up then horizontal sweep
