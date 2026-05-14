@@ -12,7 +12,6 @@ export default function MineCell({
   isTargeting,
   onTargetClick,
   gameOver,
-  skin = 'default',
 }) {
   const { isRevealed, isMine, isFlagged, neighborCount } = cell;
   const longPressTimer = useRef(null);
@@ -70,7 +69,7 @@ export default function MineCell({
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
       >
-        {isFlagged && <span className={`text-sm cell-flag ${skin === 'sakura' ? 'text-pink-500' : 'text-yellow-400'}`}>🚩</span>}
+        {isFlagged && <span className="text-sm cell-flag text-yellow-400">🚩</span>}
         {isHighlighted && !isFlagged && <span className="text-cyan-400 text-sm">✦</span>}
       </div>
     );

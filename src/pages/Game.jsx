@@ -8,6 +8,7 @@ import { createBoard, placeMines, floodReveal, checkWin, getSafeCells, revealAre
 import { FIELD_SIZES, ABILITIES, CHARGE_SCALE } from '@/lib/gameConstants';
 import { usePlayerProfile } from '@/lib/usePlayerProfile';
 import { SFX } from '@/lib/sounds';
+import { useSkin } from '@/lib/SkinContext';
 
 import MineBoard from '@/components/game/MineBoard';
 import GameHUD from '@/components/game/GameHUD';
@@ -43,7 +44,7 @@ export default function Game() {
   const lockedAbility = params.get('ability') || 'scan';
 
   const cfg  = FIELD_SIZES[fieldSize] || FIELD_SIZES.small;
-  const skin = profile?.active_skin || 'default';
+  const skin = useSkin();
   const ab = ABILITIES[lockedAbility];
   const scaledCharges = ab ? Math.round(ab.charges * (CHARGE_SCALE[fieldSize] || 1)) : 0;
 
@@ -338,7 +339,7 @@ export default function Game() {
   );
 
   return (
-    <div className={`skin-${skin} min-h-screen transition-colors duration-500`} style={{ background: 'var(--skin-bg-gradient)' }}>
+    <div className="min-h-screen" style={{ background: 'transparent' }}>
       <JCEOverlay active={jceActive} onComplete={handleJCEComplete} />
       <JJOverlay active={jjActive} onComplete={handleJJComplete} />
       <CoinPopup amount={COIN_SINGLE} trigger={coinTrigger} />
@@ -460,9 +461,9 @@ export default function Game() {
         )}
 
         {/* ── Board ── */}
-        <div className={`skin-${skin} overflow-auto max-w-full pb-2`}>
+        <div className="overflow-auto max-w-full pb-2">
           <MineBoard
-            cells={cells} rows={cfg.rows} cols={cfg.cols} skin={skin}
+            cells={cells} rows={cfg.rows} cols={cfg.cols}
             onCellClick={handleCellClick} onCellRightClick={handleRightClick}
             highlightedIdx={highlightedIdx} targetingAbility={activeAbility}
             onTargetClick={handleCellClick} gameOver={gameState === 'won' || gameState === 'lost'}

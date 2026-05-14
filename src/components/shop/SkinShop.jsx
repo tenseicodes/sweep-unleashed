@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
 import { SKINS } from '@/lib/gameConstants';
+import { useSkin } from '@/lib/SkinContext';
 
 export default function SkinShop({ profile, onPurchase }) {
+  const activeSkin = useSkin(); // use live skin from context, not stale profile
+
   return (
     <div className="grid grid-cols-2 gap-3">
       {Object.values(SKINS).map((skin, i) => {
-        const owned  = profile?.owned_skins?.includes(skin.id);
-        const active = profile?.active_skin === skin.id;
+        const owned    = profile?.owned_skins?.includes(skin.id);
+        const active   = activeSkin === skin.id;
         const canAfford = (profile?.coins || 0) >= skin.price;
 
         return (
@@ -15,10 +18,12 @@ export default function SkinShop({ profile, onPurchase }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`p-3 rounded-xl border flex flex-col gap-2.5 transition-all
-              ${active
-                ? 'border-primary/60 bg-primary/10 shadow-lg shadow-primary/20'
-                : 'border-white/10 bg-white/5 hover:border-white/20'}`}
+            className="p-3 rounded-xl flex flex-col gap-2.5 transition-all"
+            style={{
+              border: `1px solid ${active ? 'var(--skin-accent)' : 'var(--skin-border)'}`,
+              background: active ? 'var(--skin-accent-soft)' : 'rgba(255,255,255,0.03)',
+              boxShadow: active ? '0 0 16px var(--skin-accent-soft)' : 'none',
+            }}
           >
             {/* Preview grid */}
             <div className="grid grid-cols-4 gap-0.5 rounded overflow-hidden">
@@ -36,17 +41,20 @@ export default function SkinShop({ profile, onPurchase }) {
             </div>
 
             <div>
-              <p className="font-arcade text-[9px] text-foreground tracking-wider">{skin.name.toUpperCase()}</p>
-              <p className="text-[9px] text-muted-foreground mt-0.5">{skin.description}</p>
+              <p className="font-arcade text-[9px] tracking-wider" style={{ color: 'var(--skin-text)' }}>
+                {skin.name.toUpperCase()}
+              </p>
+              <p className="text-[9px] mt-0.5" style={{ color: 'var(--skin-muted)' }}>{skin.description}</p>
             </div>
 
             {active ? (
-              <span className="font-arcade text-[8px] text-primary text-center py-1.5">✓ ACTIVE</span>
+              <span className="font-arcade text-[8px] text-center py-1.5" style={{ color: 'var(--skin-accent)' }}>✓ ACTIVE</span>
             ) : owned ? (
               <motion.button
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 onClick={() => onPurchase('skin_equip', skin.id, 0)}
-                className="w-full font-arcade text-[8px] py-2 rounded-lg border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+                className="w-full font-arcade text-[8px] py-2 rounded-lg transition-all"
+                style={{ border: '1px solid var(--skin-accent)', color: 'var(--skin-accent)', background: 'var(--skin-accent-soft)' }}
               >
                 EQUIP
               </motion.button>
