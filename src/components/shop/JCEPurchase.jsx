@@ -100,7 +100,7 @@ export default function JCEPurchase({ open, onClose, onSuccess, title = 'Judgeme
             >
               <span className="text-5xl">⚔️</span>
               <p className="text-white font-bold text-lg">Ability Unlocked!</p>
-              <p className="text-white/50 text-xs">Judgement Cut End is now yours.</p>
+              <p className="text-white/50 text-xs">{title} is now yours.</p>
             </motion.div>
           )}
         </motion.div>
