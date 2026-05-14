@@ -75,6 +75,7 @@ export default function AbilityShop({ profile, onPurchase }) {
         onClose={() => setJceOpen(false)}
         onSuccess={() => { onPurchase('jce', 'jce', 0); setJceOpen(false); }}
         price="5.00"
+        description="A legendary ability. Destroys ~65% of all mines in a cinematic barrage of slashes."
       />
       <JCEPurchase
         open={jjOpen}

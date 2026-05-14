@@ -152,6 +152,58 @@
 .animate-scan-pulse { animation: scan-pulse 1s ease-out 2; }
 .animate-shield-pulse { animation: shield-pulse 1.5s ease-in-out infinite; }
 
+/* ── Skin full-game themes ── */
+.skin-default {
+  --skin-bg: hsl(222 20% 8%);
+  --skin-bg-gradient: linear-gradient(160deg, hsl(222 20% 8%) 0%, hsl(222 20% 6%) 100%);
+  --skin-hud-bg: hsl(222 20% 11% / 0.9);
+  --skin-accent: hsl(262 80% 65%);
+  --skin-accent-soft: hsl(262 80% 65% / 0.15);
+  --skin-border: hsl(222 20% 18%);
+  --skin-text: hsl(210 40% 95%);
+  --skin-muted: hsl(210 20% 55%);
+}
+.skin-neon {
+  --skin-bg: #050510;
+  --skin-bg-gradient: linear-gradient(160deg, #050510 0%, #010108 100%);
+  --skin-hud-bg: #0a0a1a;
+  --skin-accent: #00ffff;
+  --skin-accent-soft: rgba(0, 255, 255, 0.12);
+  --skin-border: #0ff3;
+  --skin-text: #e0f8ff;
+  --skin-muted: #0ff7;
+}
+.skin-cyberpunk {
+  --skin-bg: #0d050d;
+  --skin-bg-gradient: linear-gradient(160deg, #0d050d 0%, #05000a 100%);
+  --skin-hud-bg: #1a0a1a;
+  --skin-accent: #ff0066;
+  --skin-accent-soft: rgba(255, 0, 102, 0.12);
+  --skin-border: #ff006644;
+  --skin-text: #ffe0f0;
+  --skin-muted: #ff006888;
+}
+.skin-city {
+  --skin-bg: #111827;
+  --skin-bg-gradient: linear-gradient(160deg, #111827 0%, #0a101c 100%);
+  --skin-hud-bg: #1a2235;
+  --skin-accent: #90cdf4;
+  --skin-accent-soft: rgba(144, 205, 244, 0.12);
+  --skin-border: #4a5568;
+  --skin-text: #e2e8f0;
+  --skin-muted: #718096;
+}
+.skin-sakura {
+  --skin-bg: #1a0a10;
+  --skin-bg-gradient: linear-gradient(160deg, #1a0a10 0%, #2d0a1a 100%);
+  --skin-hud-bg: #2d1020;
+  --skin-accent: #f48fb1;
+  --skin-accent-soft: rgba(244, 143, 177, 0.15);
+  --skin-border: #f48fb144;
+  --skin-text: #fce4ec;
+  --skin-muted: #f48fb199;
+}
+
 /* ── Skins ── */
 .skin-default .cell-unrevealed {
   background: hsl(222 20% 18%);

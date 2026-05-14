@@ -331,14 +331,6 @@ export default function Game() {
   const isTargeting   = activeAbility === lockedAbility;
   const isShieldOn    = lockedAbility === 'shield' && shieldActive;
 
-  const skinBgMap = {
-    default: 'bg-background',
-    neon: 'bg-[#050510]',
-    cyberpunk: 'bg-[#0d050d]',
-    city: 'bg-[#111827]',
-    sakura: 'bg-[#fce4ec]/10',
-  };
-
   if (loading) return (
     <div className="fixed inset-0 flex items-center justify-center bg-black">
       <p className="font-arcade text-[10px] text-primary animate-pulse tracking-widest">LOADING...</p>
@@ -346,7 +338,7 @@ export default function Game() {
   );
 
   return (
-    <div className={`min-h-screen ${skinBgMap[skin] || 'bg-background'} transition-colors duration-500`}>
+    <div className={`skin-${skin} min-h-screen transition-colors duration-500`} style={{ background: 'var(--skin-bg-gradient)' }}>
       <JCEOverlay active={jceActive} onComplete={handleJCEComplete} />
       <JJOverlay active={jjActive} onComplete={handleJJComplete} />
       <CoinPopup amount={COIN_SINGLE} trigger={coinTrigger} />
@@ -404,8 +396,8 @@ export default function Game() {
         {ab && (
           <div className="w-full max-w-4xl">
             <motion.div
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${ab.bgColor} ${ab.borderColor}
-                ${isShieldOn ? 'animate-shield-pulse' : ''}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${isShieldOn ? 'animate-shield-pulse' : ''}`}
+              style={{ background: 'var(--skin-accent-soft)', borderColor: 'var(--skin-border)' }}
               layout
             >
               {AbilityIcon && <AbilityIcon className={`w-5 h-5 shrink-0 ${ab.color}`} />}
